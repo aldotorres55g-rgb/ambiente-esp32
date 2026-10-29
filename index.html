@@ -1,171 +1,1717 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Monitor ambiental ESP32 y DHT11 con ajuste de temperatura en tres puntos."><title>Ambiente · ESP32</title>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Monitor ambiental ESP32 y DHT11 con ajuste de temperatura en tres puntos.">
+<title>Ambiente · ESP32</title>
 <style>
-:root{--bg:#101819;--panel:#182223;--line:#2c393a;--muted:#a2b2b3;--ink:#eff5f0;--green:#d0f49d;--teal:#76d8c9;--amber:#f6bd71}*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}button,input{font:inherit}button,a{ -webkit-tap-highlight-color:transparent}button{cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:10px 15px;color:var(--ink);background:transparent}button:hover{background:#283333}button:disabled{opacity:.4;cursor:not-allowed}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--green);outline-offset:3px}a{color:var(--green);text-decoration:none}a:hover{text-decoration:underline}.primary{background:var(--green);color:#1b2a1a;border-color:var(--green);font-weight:700}.primary:hover{background:#bce884}.shell{max-width:1240px;margin:auto;padding:0 36px}header{border-bottom:1px solid var(--line)}.top{display:flex;align-items:center;justify-content:space-between;height:92px;gap:16px}.brand{display:flex;align-items:center;gap:13px}.mark{width:36px;height:36px;display:grid;place-items:center;border-radius:10px;background:var(--green);color:#17291d;font-size:24px}.brand b{font-size:22px;letter-spacing:-1px}.brand small{display:block;color:var(--muted);font-size:10px;letter-spacing:2px}.meta{color:var(--muted);font-size:12px}.pill{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:30px;padding:6px 12px;font-size:11px;letter-spacing:.5px}.dot{width:6px;height:6px;border-radius:50%;background:var(--amber)}nav{display:flex;gap:30px;padding-top:13px}nav button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:13px 0;font-size:13px;color:var(--muted)}nav button[aria-selected=true]{border-bottom-color:var(--green);color:var(--green)}main{padding:38px 0 60px}.eyebrow{font-size:10px;letter-spacing:2px;color:var(--green);font-weight:bold;margin:0 0 9px}h1{font-size:38px;font-weight:500;letter-spacing:-1.5px;margin:0}h2{font-size:19px;font-weight:500;margin:0 0 5px}h3{font-size:15px;font-weight:500;margin:0 0 10px}p{color:var(--muted);margin:8px 0 20px;font-size:14px}.heading{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;gap:20px}.heading p{margin:9px 0 0}.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.notice{border:1px solid var(--line);border-left:3px solid var(--amber);background:#1b2423;padding:13px 17px;color:#c4cfca;font-size:13px;border-radius:5px;margin-bottom:24px}.notice a{margin-left:10px}.cards{display:grid;grid-template-columns:1.2fr 1.2fr 1fr;gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:23px;min-width:0}.card.hero{background:var(--green);border-color:var(--green);color:#1c3429}.label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:12px}.hero .label,.hero .note{color:#46623d}.value{font-size:54px;letter-spacing:-3px;line-height:1.3;margin:20px 0 13px;font-variant-numeric:tabular-nums}.unit{font-size:20px;letter-spacing:0;margin-left:6px;font-weight:400}.note{font-size:11px;color:var(--muted)}.hero .note{border-top:1px solid #adc884;padding-top:11px}.split{display:grid;grid-template-columns:2.1fr 1fr;gap:16px;margin-top:18px}.chart-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.legend{display:flex;gap:14px;font-size:10px;color:var(--muted)}.legend span:before{content:'';width:13px;height:2px;background:var(--green);display:inline-block;vertical-align:middle;margin-right:5px}.legend span:last-child:before{background:var(--teal)}.chartbox{position:relative;height:265px;margin-top:14px}.chartbox svg{width:100%;height:100%}.empty{position:absolute;inset:0;display:grid;place-content:center;text-align:center;color:var(--muted);font-size:13px}.empty strong{color:var(--ink);font-weight:400;display:block;margin-bottom:5px}.row{display:flex;justify-content:space-between;gap:15px;padding:15px 0;border-bottom:1px solid var(--line);font-size:12px}.row:last-child{border:0}.row span:first-child{color:var(--muted)}.accent{color:var(--green)}.table-card{margin-top:18px}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:12px;text-align:left}th{color:var(--muted);font-weight:400;padding:15px 12px;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:13px 12px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}tr:last-child td{border:0}.small{font-size:12px;color:var(--muted)}.twocol{display:grid;grid-template-columns:1.45fr 1fr;gap:20px}.steps{counter-reset:steps}.step{position:relative;padding:0 0 22px 42px}.step:before{counter-increment:steps;content:counter(steps,decimal-leading-zero);position:absolute;left:0;top:2px;color:var(--green);font-size:12px}.step p{font-size:13px;margin:3px 0}.formgrid{display:grid;grid-template-columns:30px 1fr 1fr;align-items:center;gap:12px;margin:15px 0}input[type=number],input[type=url]{border:1px solid #405050;border-radius:7px;background:#121c1d;color:var(--ink);padding:11px;min-width:0;width:100%}label{font-size:12px;color:var(--muted)}.formgrid .small{text-align:center}.calc-result{min-height:100px;padding:15px;border:1px solid var(--line);border-radius:8px;margin:18px 0;color:var(--green);font-size:14px;white-space:pre-line}.error{color:#ffb5a5!important}code{font-family:ui-monospace,monospace;color:var(--green);font-size:12px;overflow-wrap:anywhere}details{border-top:1px solid var(--line);padding:18px 0}summary{cursor:pointer;font-size:14px}details p{font-size:13px;margin-bottom:4px}footer{border-top:1px solid var(--line);padding:20px 0;color:var(--muted);font-size:10px;display:flex;justify-content:space-between;gap:16px;letter-spacing:.7px}dialog{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:28px;max-width:580px;width:calc(100% - 32px)}dialog::backdrop{background:#000a}dialog label{display:block;margin:16px 0}dialog input[type=checkbox]{margin-right:8px}.status-text{font-size:12px;min-height:20px}.checkline{display:flex;align-items:baseline;gap:8px;margin:14px 0}.checkline input{flex-shrink:0}.formula{font-family:ui-monospace,monospace;font-size:13px;background:#111c1c;padding:18px;border-radius:8px;color:var(--green)}[hidden]{display:none!important}@media(max-width:800px){.shell{padding:0 20px}.top{height:80px}.meta{display:none}.heading{align-items:flex-start;flex-direction:column}h1{font-size:31px}.cards{grid-template-columns:1fr 1fr}.cards .card:last-child{grid-column:1/-1}.split,.twocol{grid-template-columns:1fr}.value{font-size:42px}.card{padding:19px}nav{gap:25px}.heading .actions{width:100%}.heading .actions button{flex:1}.chart-head{align-items:flex-start;flex-direction:column}}@media(max-width:440px){.cards{grid-template-columns:1fr}.cards .card:last-child{grid-column:auto}.pill{font-size:9px}.brand b{font-size:20px}.formgrid{grid-template-columns:20px 1fr 1fr;gap:8px}footer{flex-direction:column;gap:4px}.unit{font-size:19px}}@media print{body{background:white;color:black}header,nav,footer,button,dialog,.no-print{display:none!important}.shell{padding:0;max-width:none}.card{border:1px solid #bbb;background:white;color:black}.twocol,.split{display:block}p,.small,.note,label{color:#333}.formula,.calc-result,code,.accent{color:#222;background:#eee}input{color:black!important;background:white!important}.eyebrow{color:#222}}
-</style></head><body>
-<header><div class="shell"><div class="top"><div class="brand"><span class="mark" aria-hidden="true">≋</span><div><b>ambiente</b><small>LABORATORIO IoT</small></div></div><span class="meta">ESP32 / DHT11 · ESIME ZACATENCO</span><span class="pill"><i class="dot" id="statusDot"></i><span id="topStatus">SIN CONECTAR</span></span></div><nav role="tablist" aria-label="Secciones"><button role="tab" id="tab-monitor" aria-selected="true" aria-controls="monitor" data-tab="monitor">01 &nbsp; Monitor</button><button role="tab" id="tab-ajuste" aria-selected="false" aria-controls="ajuste" data-tab="ajuste">02 &nbsp; Ajuste de 3 puntos</button><button role="tab" id="tab-guia" aria-selected="false" aria-controls="guia" data-tab="guia">03 &nbsp; Conexión y entrega</button></nav></div></header>
-<div class="shell"><main>
-<section id="monitor" role="tabpanel" aria-labelledby="tab-monitor"><div class="heading"><div><p class="eyebrow">OBSERVA TU ENTORNO</p><h1>Un vistazo al ambiente.</h1><p>Temperatura y humedad, desde el sensor hasta la nube.</p></div><div class="actions"><button id="demo">Ver demostración</button><button id="connect" class="primary">Conectar mi sensor ↗</button></div></div>
-<div class="notice" id="banner" role="status">Conexión pendiente. Instala los archivos de Apps Script para recibir tus mediciones. Puedes explorar la demostración sin escribir en tu hoja.</div>
-<div class="cards"><article class="card hero"><div class="label"><span>TEMPERATURA DE SALIDA</span><span>↗</span></div><div class="value"><span id="temp">—</span><span class="unit">°C</span></div><div class="note" id="tempNote">Ajuste pendiente de tus tres mediciones</div></article><article class="card"><div class="label"><span>HUMEDAD RELATIVA</span><span style="color:var(--teal)">◌</span></div><div class="value"><span id="hum">—</span><span class="unit">% HR</span></div><div class="note">Lectura del DHT11 · sin ajuste de humedad</div></article><article class="card"><div class="label"><span>TEMPERATURA ORIGINAL</span><span>⌁</span></div><div class="value"><span id="raw">—</span><span class="unit">°C</span></div><div class="note">Valor del sensor antes de la corrección</div></article></div>
-<div class="split"><article class="card"><div class="chart-head"><div><h2>Historia del ambiente</h2><span class="small" id="chartCaption">Hasta 120 registros · cada magnitud usa su propia escala</span></div><div class="legend"><span>°C · izquierda</span><span>% HR · derecha</span></div></div><div class="chartbox"><svg id="chart" viewBox="0 0 720 250" role="img" aria-label="Historial de temperatura y humedad"></svg><div id="emptyChart" class="empty"><div><strong>Tu próxima lectura empieza aquí.</strong>Conecta el proyecto o abre la demostración.</div></div></div></article><aside class="card"><p class="eyebrow">ESTADO DEL PROTOTIPO</p><h2>Del aula a la nube.</h2><div class="row"><span>Microcontrolador</span><span>ESP32</span></div><div class="row"><span>Sensor / señal</span><span>DHT11 / GPIO 4</span></div><div class="row"><span>Envío programado</span><span>≈ 60 segundos</span></div><div class="row"><span>Último registro</span><span id="lastTime">Pendiente</span></div><div class="row"><span>Fuente</span><span id="sourceLabel" class="accent">Sin conectar</span></div><button id="refresh" style="width:100%;margin-top:15px" disabled>Actualizar lecturas</button></aside></div>
-<article class="card table-card"><div class="chart-head"><div><h2>Bitácora de lecturas</h2><span class="small">Las últimas 12 lecturas. El CSV incluye todos los registros cargados.</span></div><button id="csv" disabled>Descargar CSV ↓</button></div><div class="table-wrap"><table><thead><tr><th>Fecha y hora · CDMX</th><th>Original °C</th><th>Salida °C</th><th>Humedad % HR</th><th>Ajuste de temperatura</th></tr></thead><tbody id="rows"><tr><td colspan="5" class="small">Todavía no hay mediciones cargadas.</td></tr></tbody></table></div></article></section>
-<section id="ajuste" role="tabpanel" aria-labelledby="tab-ajuste" hidden><div class="heading"><div><p class="eyebrow">COMPARA · AJUSTA · VERIFICA</p><h1>Tres puntos. Una corrección.</h1><p>Introduce promedios reales del DHT11 y de tu termómetro de referencia.</p></div><button onclick="window.print()">Imprimir este ajuste</button></div><div class="notice">Usa un termómetro ambiental o una sonda apta para medir aire. Un termómetro clínico o infrarrojo puede no servir para esta comparación. La humedad requiere un higrómetro de referencia.</div><div class="twocol"><article class="card"><h2>Tus mediciones</h2><p>Ordena los puntos de menor a mayor temperatura. En cada nivel, toma 5 pares de lecturas una vez estabilizados ambos instrumentos y calcula sus promedios.</p><form id="calForm"><div class="formgrid"><span></span><span class="small">DHT11 sin ajustar · °C</span><span class="small">Termómetro · °C</span>
-<span class="small">01</span><input id="x1" aria-label="Punto 1 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y1" aria-label="Punto 1 promedio termómetro" type="number" step="any" required placeholder="Sin medir">
-<span class="small">02</span><input id="x2" aria-label="Punto 2 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y2" aria-label="Punto 2 promedio termómetro" type="number" step="any" required placeholder="Sin medir">
-<span class="small">03</span><input id="x3" aria-label="Punto 3 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y3" aria-label="Punto 3 promedio termómetro" type="number" step="any" required placeholder="Sin medir"></div><div style="margin:18px 0 10px">
-  <h3 style="margin:0 0 7px">Humedad relativa · tres puntos</h3>
-  <p class="small">Introduce la humedad del DHT11 y de un higrómetro de referencia en cada punto. No se puede calcular la humedad de referencia con un termómetro convencional.</p>
-  <div class="formgrid">
-    <span></span><span class="small">DHT11 · % HR</span><span class="small">Higrómetro · % HR</span>
-    <span class="small">01</span><input id="hx1" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 1"><input id="hy1" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 1">
-    <span class="small">02</span><input id="hx2" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 2"><input id="hy2" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 2">
-    <span class="small">03</span><input id="hx3" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 3"><input id="hy3" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 3">
+:root {
+  --bg:#101819;
+  --panel:#182223;
+  --line:#2c393a;
+  --muted:#a2b2b3;
+  --ink:#eff5f0;
+  --green:#d0f49d;
+  --teal:#76d8c9;
+  --amber:#f6bd71;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:Inter,Arial,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.5;
+}
+button,input {font:inherit}
+button {
+  cursor:pointer;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:10px 15px;
+  color:var(--ink);
+  background:transparent;
+}
+button:hover {background:#283333}
+button:disabled {opacity:.4;cursor:not-allowed}
+button:focus-visible,input:focus-visible {
+  outline:2px solid var(--green);
+  outline-offset:3px;
+}
+.primary {
+  background:var(--green);
+  color:#1b2a1a;
+  border-color:var(--green);
+  font-weight:700;
+}
+.primary:hover {background:#bce884}
+.shell {max-width:1240px;margin:auto;padding:0 36px}
+header {border-bottom:1px solid var(--line)}
+.top {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  height:92px;
+  gap:16px;
+}
+.brand {display:flex;align-items:center;gap:13px}
+.mark {
+  width:36px;height:36px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--green);
+  color:#17291d;
+  font-size:24px;
+}
+.brand b {font-size:22px;letter-spacing:-1px}
+.brand small {
+  display:block;color:var(--muted);
+  font-size:10px;letter-spacing:2px;
+}
+.meta {color:var(--muted);font-size:12px}
+.pill {
+  display:inline-flex;align-items:center;gap:8px;
+  border:1px solid var(--line);
+  border-radius:30px;padding:6px 12px;
+  font-size:11px;
+}
+.dot {
+  width:6px;height:6px;
+  border-radius:50%;background:var(--amber);
+}
+nav {display:flex;gap:30px;padding-top:13px}
+nav button {
+  border:0;border-bottom:2px solid transparent;
+  border-radius:0;padding:13px 0;
+  font-size:13px;color:var(--muted);
+}
+nav button[aria-selected=true] {
+  border-bottom-color:var(--green);
+  color:var(--green);
+}
+main {padding:38px 0 60px}
+.eyebrow {
+  font-size:10px;letter-spacing:2px;
+  color:var(--green);font-weight:bold;
+  margin:0 0 9px;
+}
+h1 {font-size:38px;font-weight:500;margin:0}
+h2 {font-size:19px;font-weight:500;margin:0 0 5px}
+h3 {font-size:15px;font-weight:500;margin:0 0 10px}
+p {color:var(--muted);margin:8px 0 20px;font-size:14px}
+.heading {
+  display:flex;justify-content:space-between;
+  align-items:center;margin-bottom:26px;gap:20px;
+}
+.heading p {margin:9px 0 0}
+.actions {display:flex;gap:8px;flex-wrap:wrap}
+.notice {
+  border:1px solid var(--line);
+  border-left:3px solid var(--amber);
+  background:#1b2423;
+  padding:13px 17px;
+  color:#c4cfca;
+  font-size:13px;
+  border-radius:5px;
+  margin-bottom:24px;
+}
+.cards {
+  display:grid;
+  grid-template-columns:1.2fr 1.2fr 1fr;
+  gap:15px;
+}
+.card {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:23px;
+  min-width:0;
+}
+.card.hero {
+  background:var(--green);
+  border-color:var(--green);
+  color:#1c3429;
+}
+.label {
+  font-size:12px;color:var(--muted);
+  display:flex;justify-content:space-between;
+}
+.hero .label,.hero .note {color:#46623d}
+.value {
+  font-size:54px;letter-spacing:-3px;
+  line-height:1.3;margin:20px 0 13px;
+}
+.unit {font-size:20px;letter-spacing:0;margin-left:6px}
+.note {font-size:11px;color:var(--muted)}
+.hero .note {
+  border-top:1px solid #adc884;
+  padding-top:11px;
+}
+.split {
+  display:grid;
+  grid-template-columns:2.1fr 1fr;
+  gap:16px;margin-top:18px;
+}
+.chart-head {
+  display:flex;align-items:center;
+  justify-content:space-between;gap:12px;
+}
+.legend {display:flex;gap:14px;font-size:10px;color:var(--muted)}
+.legend span:before {
+  content:'';width:13px;height:2px;
+  background:var(--green);
+  display:inline-block;margin-right:5px;
+}
+.legend span:last-child:before {background:var(--teal)}
+.chartbox {position:relative;height:265px;margin-top:14px}
+.chartbox svg {width:100%;height:100%}
+.empty {
+  position:absolute;inset:0;
+  display:grid;place-content:center;
+  text-align:center;color:var(--muted);
+  font-size:13px;
+}
+.empty strong {display:block;color:var(--ink)}
+.row {
+  display:flex;justify-content:space-between;
+  gap:15px;padding:15px 0;
+  border-bottom:1px solid var(--line);
+  font-size:12px;
+}
+.row:last-child {border:0}
+.row span:first-child {color:var(--muted)}
+.accent {color:var(--green)}
+.table-card {margin-top:18px}
+.table-wrap {overflow:auto}
+table {border-collapse:collapse;width:100%;font-size:12px}
+th {
+  color:var(--muted);font-weight:400;
+  padding:15px 12px;border-bottom:1px solid var(--line);
+  white-space:nowrap;
+}
+td {
+  padding:13px 12px;
+  border-bottom:1px solid var(--line);
+}
+tr:last-child td {border:0}
+.small {font-size:12px;color:var(--muted)}
+.twocol {
+  display:grid;grid-template-columns:1.45fr 1fr;gap:20px;
+}
+.formgrid {
+  display:grid;grid-template-columns:30px 1fr 1fr;
+  align-items:center;gap:12px;margin:15px 0;
+}
+input[type=number],input[type=url] {
+  border:1px solid #405050;
+  border-radius:7px;
+  background:#121c1d;color:var(--ink);
+  padding:11px;width:100%;min-width:0;
+}
+label {font-size:12px;color:var(--muted)}
+.formgrid .small {text-align:center}
+.calc-result {
+  min-height:100px;padding:15px;
+  border:1px solid var(--line);
+  border-radius:8px;margin:18px 0;
+  color:var(--green);font-size:14px;
+  white-space:pre-line;
+}
+.error {color:#ffb5a5!important}
+code {color:var(--green);overflow-wrap:anywhere}
+[hidden] {display:none!important}
+footer {
+  border-top:1px solid var(--line);
+  padding:20px 0;color:var(--muted);
+  font-size:10px;
+  display:flex;justify-content:space-between;
+}
+dialog {
+  background:var(--panel);color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:14px;padding:28px;
+  max-width:580px;width:calc(100% - 32px);
+}
+dialog::backdrop {background:#000a}
+dialog label {display:block;margin:16px 0}
+.status-text {font-size:12px}
+.checkline {display:flex;align-items:center;gap:8px;margin:14px 0}
+.formula {
+  font-family:monospace;font-size:13px;
+  background:#111c1c;padding:18px;
+  border-radius:8px;color:var(--green);
+}
+@media(max-width:800px) {
+  .shell {padding:0 20px}
+  .top {height:80px}
+  .meta {display:none}
+  .heading {align-items:flex-start;flex-direction:column}
+  h1 {font-size:31px}
+  .cards {grid-template-columns:1fr 1fr}
+  .cards .card:last-child {grid-column:1/-1}
+  .split,.twocol {grid-template-columns:1fr}
+  .value {font-size:42px}
+  .card {padding:19px}
+  nav {gap:20px}
+}
+@media(max-width:440px) {
+  .cards {grid-template-columns:1fr}
+  .cards .card:last-child {grid-column:auto}
+  .formgrid {grid-template-columns:20px 1fr 1fr;gap:8px}
+  footer {flex-direction:column}
+}
+@media print {
+  body {background:white;color:black}
+  header,nav,footer,button,dialog {display:none!important}
+  .card {border:1px solid #bbb;background:white;color:black}
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="shell">
+  <div class="top">
+    <div class="brand">
+      <span class="mark">≋</span>
+      <div><b>ambiente</b><small>LABORATORIO IoT</small></div>
+    </div>
+    <span class="meta">ESP32 / DHT11 · ESIME ZACATENCO</span>
+    <span class="pill">
+      <i class="dot" id="statusDot"></i>
+      <span id="topStatus">SIN CONECTAR</span>
+    </span>
   </div>
+  <nav role="tablist" aria-label="Secciones">
+    <button role="tab" id="tab-monitor" aria-selected="true" aria-controls="monitor" data-tab="monitor">01 Monitor</button>
+    <button role="tab" id="tab-ajuste" aria-selected="false" aria-controls="ajuste" data-tab="ajuste">02 Ajuste de 3 puntos</button>
+    <button role="tab" id="tab-guia" aria-selected="false" aria-controls="guia" data-tab="guia">03 Conexión y entrega</button>
+  </nav>
 </div>
-<label class="checkline"><input type="checkbox" id="realPoints" required>Confirmo que son mediciones reales y estables tomadas con una referencia adecuada.</label><button class="primary" type="submit">Calcular mi ajuste</button></form><div id="calcResult" class="calc-result" role="status">Esperando los tres pares de promedios.</div><div class="actions"><button id="downloadHeader" disabled>Descargar Calibracion.h ↓</button><button id="downloadCal" disabled>Guardar tabla CSV ↓</button></div><p class="small" style="margin-bottom:0">Se guarda un borrador en este navegador, si permite almacenamiento local. Descargar el archivo no cambia el ESP32: hay que cargar el programa desde Arduino IDE.</p></article><aside class="card"><p class="eyebrow">MÉTODO</p><h2>Interpolación por tramos</h2><p>Una recta une los puntos 1 y 2; otra une los puntos 2 y 3. Cada lectura se corrige con la recta que le corresponde.</p><div class="formula">Tsalida = yi + (Tcruda − xi)<br>× (yi+1 − yi) / (xi+1 − xi)</div><div class="row"><span>x</span><span>Promedio DHT11</span></div><div class="row"><span>y</span><span>Promedio termómetro</span></div><p class="small">Fuera del intervalo medido, el programa muestra la lectura original y marca «fuera de intervalo». No extrapola.</p><div class="notice" style="margin:20px 0 0">Coincidir en los tres puntos usados para calcular el ajuste no prueba la exactitud. Después repite mediciones independientes para comprobar el error.</div></aside></div><article class="card" id="calGraphs" style="margin-top:20px">
-<h2>Análisis gráfico de calibración</h2>
-<p class="small">Las curvas se generan con las mediciones introducidas, sin datos inventados. Temperatura y humedad usan escalas independientes.</p>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px">
-<div><h3>Gráfica 1 · Temperatura y humedad</h3><div id="calCompare" style="min-height:260px"><p class="small">Introduce las mediciones y pulsa «Calcular mi ajuste».</p></div></div>
-<div><h3>Gráfica 2 · Errores antes del ajuste</h3><div id="calErrors" style="min-height:260px"><p class="small">Pendiente de cálculo.</p></div></div>
+</header>
+
+<div class="shell">
+<main>
+<section id="monitor" role="tabpanel" aria-labelledby="tab-monitor">
+  <div class="heading">
+    <div>
+      <p class="eyebrow">OBSERVA TU ENTORNO</p>
+      <h1>Un vistazo al ambiente.</h1>
+      <p>Temperatura y humedad, desde el sensor hasta la nube.</p>
+    </div>
+    <div class="actions">
+      <button id="demo">Ver demostración</button>
+      <button id="connect" class="primary">Conectar mi sensor ↗</button>
+    </div>
+  </div>
+
+  <div class="notice" id="banner" role="status">
+    Conexión pendiente. Conecta tu sensor para ver las mediciones.
+  </div>
+
+  <div class="cards">
+    <article class="card hero">
+      <div class="label">TEMPERATURA DE SALIDA</div>
+      <div class="value"><span id="temp">—</span><span class="unit">°C</span></div>
+      <div class="note" id="tempNote">Ajuste pendiente</div>
+    </article>
+    <article class="card">
+      <div class="label">HUMEDAD RELATIVA</div>
+      <div class="value"><span id="hum">—</span><span class="unit">% HR</span></div>
+      <div class="note">Lectura del DHT11</div>
+    </article>
+    <article class="card">
+      <div class="label">TEMPERATURA ORIGINAL</div>
+      <div class="value"><span id="raw">—</span><span class="unit">°C</span></div>
+      <div class="note">Valor antes de la corrección</div>
+    </article>
+  </div>
+
+  <div class="split">
+    <article class="card">
+      <div class="chart-head">
+        <div>
+          <h2>Historia del ambiente</h2>
+          <span class="small" id="chartCaption">Hasta 120 registros</span>
+        </div>
+        <div class="legend">
+          <span>°C · izquierda</span>
+          <span>% HR · derecha</span>
+        </div>
+      </div>
+      <div class="chartbox">
+        <svg id="chart" viewBox="0 0 720 250" role="img"
+          aria-label="Historial de temperatura y humedad"></svg>
+        <div id="emptyChart" class="empty">
+          <div><strong>Tu próxima lectura empieza aquí.</strong>
+          Conecta el proyecto o abre la demostración.</div>
+        </div>
+      </div>
+    </article>
+
+    <aside class="card">
+      <p class="eyebrow">ESTADO DEL PROTOTIPO</p>
+      <h2>Del aula a la nube.</h2>
+      <div class="row"><span>Microcontrolador</span><span>ESP32</span></div>
+      <div class="row"><span>Sensor / señal</span><span>DHT11 / GPIO 4</span></div>
+      <div class="row"><span>Envío programado</span><span>≈ 60 segundos</span></div>
+      <div class="row"><span>Último registro</span><span id="lastTime">Pendiente</span></div>
+      <div class="row"><span>Fuente</span><span id="sourceLabel" class="accent">Sin conectar</span></div>
+      <button id="refresh" style="width:100%;margin-top:15px" disabled>
+        Actualizar lecturas
+      </button>
+    </aside>
+  </div>
+
+  <article class="card table-card">
+    <div class="chart-head">
+      <div>
+        <h2>Bitácora de lecturas</h2>
+        <span class="small">Las últimas 12 lecturas.</span>
+      </div>
+      <button id="csv" disabled>Descargar CSV ↓</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha y hora · CDMX</th>
+            <th>Original °C</th>
+            <th>Salida °C</th>
+            <th>Humedad % HR</th>
+            <th>Ajuste de temperatura</th>
+          </tr>
+        </thead>
+        <tbody id="rows">
+          <tr><td colspan="5">Todavía no hay mediciones cargadas.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </article>
+</section>
+  <!-- SECCIÓN 02: AJUSTE DE TEMPERATURA -->
+<section id="ajuste" role="tabpanel" aria-labelledby="tab-ajuste" hidden>
+
+  <div class="heading">
+    <div>
+      <p class="eyebrow">COMPARA · AJUSTA · VERIFICA</p>
+      <h1>Tres puntos. Una corrección.</h1>
+      <p>
+        Introduce las temperaturas reales medidas con el
+        DHT11 y con el termómetro de referencia.
+      </p>
+    </div>
+    <button onclick="window.print()">Imprimir este ajuste</button>
+  </div>
+
+  <div class="notice">
+    Utiliza un termómetro adecuado para medir la temperatura
+    ambiental. En cada punto, espera a que las lecturas se
+    estabilicen antes de registrar los valores.
+    No introduzcas valores inventados.
+  </div>
+
+  <div class="twocol">
+
+    <!-- FORMULARIO DE MEDICIONES -->
+    <article class="card">
+
+      <h2>Tus mediciones</h2>
+      <p>
+        Ordena los tres puntos de menor a mayor temperatura.
+        Para cada punto, registra el promedio del DHT11 y
+        del termómetro de referencia.
+      </p>
+
+      <form id="calForm">
+
+        <div class="formgrid">
+          <span></span>
+          <label>DHT11 sin ajustar · °C</label>
+          <label>Termómetro · °C</label>
+        </div>
+
+        <div class="formgrid">
+          <span class="small">01</span>
+          <input
+            id="x1"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="DHT11 punto 1">
+          <input
+            id="y1"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="Termómetro punto 1">
+        </div>
+
+        <div class="formgrid">
+          <span class="small">02</span>
+          <input
+            id="x2"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="DHT11 punto 2">
+          <input
+            id="y2"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="Termómetro punto 2">
+        </div>
+
+        <div class="formgrid">
+          <span class="small">03</span>
+          <input
+            id="x3"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="DHT11 punto 3">
+          <input
+            id="y3"
+            type="number"
+            step="any"
+            required
+            placeholder="Sin medir"
+            aria-label="Termómetro punto 3">
+        </div>
+
+        <label class="checkline">
+          <input id="realPoints" type="checkbox" required>
+          Confirmo que son mediciones reales y estables
+          tomadas con una referencia adecuada.
+        </label>
+
+        <button type="submit" class="primary">
+          Calcular mi ajuste
+        </button>
+
+      </form>
+
+      <div id="calResult" class="calc-result">
+        Pendiente de introducir las tres mediciones.
+      </div>
+
+      <div class="actions">
+        <button id="downloadCal" disabled>
+          Descargar Calibracion.h ↓
+        </button>
+        <button id="downloadCalCSV" disabled>
+          Guardar tabla CSV ↓
+        </button>
+      </div>
+
+      <p class="small">
+        Descargar la calibración no modifica automáticamente
+        el ESP32. El archivo deberá incorporarse al programa
+        desde Arduino IDE.
+      </p>
+
+    </article>
+
+    <!-- EXPLICACIÓN DEL MÉTODO -->
+    <aside class="card">
+
+      <p class="eyebrow">MÉTODO</p>
+      <h2>Interpolación por tramos</h2>
+
+      <p>
+        La corrección se obtiene mediante dos rectas.
+        La primera une los puntos 1 y 2; la segunda,
+        los puntos 2 y 3.
+      </p>
+
+      <div class="formula">
+        T corregida = yᵢ + (T DHT11 − xᵢ)
+        × (yᵢ₊₁ − yᵢ) / (xᵢ₊₁ − xᵢ)
+      </div>
+
+      <div class="row">
+        <span>x</span>
+        <span>Temperatura DHT11</span>
+      </div>
+
+      <div class="row">
+        <span>y</span>
+        <span>Temperatura de referencia</span>
+      </div>
+
+      <div class="row">
+        <span>Temperatura corregida</span>
+        <span>Resultado del ajuste</span>
+      </div>
+
+      <p>
+        Fuera del intervalo calibrado, se conservará
+        la lectura original del sensor.
+      </p>
+
+      <div class="notice">
+        Que la corrección coincida con los tres puntos
+        utilizados no demuestra por sí sola la exactitud
+        del sensor. Se necesitan mediciones independientes
+        para comprobar el error después del ajuste.
+      </div>
+
+    </aside>
+
+  </div>
+
+  <!-- GRÁFICAS DE COMPARACIÓN -->
+  <article class="card table-card">
+
+    <h2>Análisis gráfico de calibración</h2>
+
+    <p>
+      Las gráficas utilizan exclusivamente los valores
+      introducidos en el formulario. No se generan
+      mediciones ficticias.
+    </p>
+
+    <div class="twocol">
+
+      <!-- GRÁFICA 1 -->
+      <div>
+        <h3>Gráfica 1 · Comparación de temperaturas</h3>
+
+        <p class="small">
+          Temperatura del DHT11 frente a la temperatura
+          del termómetro de referencia en los tres puntos.
+        </p>
+
+        <div
+          id="calCompare"
+          style="min-height:280px">
+          <p class="small">
+            Introduce las mediciones y pulsa
+            «Calcular mi ajuste».
+          </p>
+        </div>
+      </div>
+
+      <!-- GRÁFICA 2 -->
+      <div>
+        <h3>Gráfica 2 · Errores de medición</h3>
+
+        <p class="small">
+          Diferencia entre la temperatura del DHT11
+          y la temperatura de referencia, expresada en °C.
+        </p>
+
+        <div
+          id="calErrors"
+          style="min-height:280px">
+          <p class="small">
+            Pendiente de cálculo.
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="notice" style="margin-top:18px">
+      Error = Temperatura DHT11 − Temperatura de referencia.
+      Un error positivo indica que el DHT11 mide por encima
+      de la referencia; uno negativo indica que mide por debajo.
+    </div>
+
+  </article>
+
+  <!-- TABLA DE RESULTADOS -->
+  <article class="card table-card">
+
+    <h2>Tabla de mediciones, errores y correcciones</h2>
+
+    <p>
+      Esta tabla muestra los mismos valores utilizados
+      en las gráficas y los resultados de la corrección.
+    </p>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Punto</th>
+            <th>DHT11 °C</th>
+            <th>Referencia °C</th>
+            <th>Error original °C</th>
+            <th>Error absoluto °C</th>
+            <th>Temperatura corregida °C</th>
+            <th>Error después del ajuste °C</th>
+          </tr>
+        </thead>
+
+        <tbody id="calTable">
+          <tr>
+            <td colspan="7">
+              Pendiente de introducir las mediciones.
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+    <p class="small">
+      El error después del ajuste en los tres puntos
+      utilizados para construir la corrección es un error
+      de ajuste, no una validación independiente.
+    </p>
+
+  </article>
+<!-- SECCIÓN 03: CONEXIÓN Y ENTREGA -->
+<section id="guia" role="tabpanel"
+         aria-labelledby="tab-guia" hidden>
+  <div class="heading">
+    <div>
+      <p class="eyebrow">PROYECTO IoT</p>
+      <h1>Conexión y entrega.</h1>
+      <p>ESP32, DHT11, Google Sheets y página web.</p>
+    </div>
+  </div>
+
+  <article class="card">
+    <h2>Funcionamiento del sistema</h2>
+    <p>
+      El ESP32 obtiene las mediciones del DHT11 y
+      las envía mediante Wi-Fi a Google Apps Script.
+      Los datos se almacenan en Google Sheets.
+      Esta página consulta las lecturas aproximadamente
+      cada 60 segundos.
+    </p>
+
+    <h3>Calibración de temperatura</h3>
+    <p>
+      En la pestaña 02 se introducen tres pares de
+      temperaturas del DHT11 y del termómetro de
+      referencia. El sistema calcula una corrección
+      por interpolación lineal entre los puntos.
+    </p>
+
+    <h3>Documentación</h3>
+    <p>
+      El reporte debe incluir las conexiones, las
+      mediciones originales, los cálculos, las
+      gráficas, los errores y una verificación
+      independiente del ajuste.
+    </p>
+  </article>
+</section>
+
+</main>
+
+<footer>
+  <span>AMBIENTE / CONTROL Y AUTOMATIZACIÓN</span>
+  <span>ESP32 → APPS SCRIPT → GOOGLE SHEETS → WEB</span>
+</footer>
 </div>
-<p class="small">Error de temperatura = T(DHT11) − T(referencia), en °C. Error de humedad = HR(DHT11) − HR(referencia), en puntos porcentuales (pp). La corrección de humedad se estima por interpolación entre lecturas de humedad DHT11 ordenadas; fuera del intervalo se conserva la lectura original.</p>
-</article>
-<article class="card table-card">
-<h2>Tabla de mediciones, errores y correcciones</h2>
-<p class="small">Los valores corresponden a las dos gráficas. Las columnas de humedad solo se completan con lecturas reales de un higrómetro de referencia.</p>
-<div class="table-wrap"><table>
-<thead><tr><th>Punto</th><th>DHT11 °C</th><th>Ref. °C</th><th>Error °C</th><th>Temp. corregida °C</th><th>DHT11 % HR</th><th>Ref. % HR</th><th>Error HR (pp)</th><th>HR corregida %</th></tr></thead>
-<tbody id="calRows"><tr><td colspan="9">Pendiente de mediciones.</td></tr></tbody>
-</table></div></article></section>
-<section id="guia" role="tabpanel" aria-labelledby="tab-guia" hidden><div class="heading"><div><p class="eyebrow">TU PROYECTO, PASO A PASO</p><h1>Listo para llevarlo al prototipo.</h1><p>El profesor pidió el ajuste de tres puntos, un reporte y un video del procedimiento.</p></div></div><div class="twocol"><article class="card"><h2>Conectar Google Sheets</h2><p>Necesitas los archivos Code.gs e Index.html del paquete entregado en el chat.</p><div class="steps"><div class="step"><h3>Abre tu hoja y guarda el código anterior</h3><p>Google Sheets → Extensiones → Apps Script. Copia tu código actual como respaldo. Conserva el archivo de datos.</p></div><div class="step"><h3>Instala los dos archivos</h3><p>Reemplaza Code.gs. Añade un archivo HTML llamado <code>Index</code> y pega Index.html. El código ya apunta a tu hoja y a la pestaña «Hoja 1».</p></div><div class="step"><h3>Actualiza la implementación existente</h3><p>Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar. Ejecutar como tú; acceso para Cualquier persona, necesario para el ESP32 sin sesión de Google. Actualizar la misma implementación conserva su URL /exec.</p></div><div class="step"><h3>Abre el monitor y verifica una lectura</h3><p>Al abrir /exec verás esta web. En este panel externo, pulsa «Conectar mi sensor» solo después de actualizar Apps Script. Enciende el ESP32 y confirma que aparece una nueva fila y una fecha reciente.</p></div></div><a href="https://docs.google.com/spreadsheets/d/1FXXlDqLMH80_znSQDQpEqqifyxo2KD2claU-K2cXu40/edit" target="_blank" rel="noopener">Abrir mi hoja de Google Sheets ↗</a><details><summary>Qué se guarda y quién puede verlo</summary><p>A: fecha; B: temperatura de salida; C: humedad; D: temperatura original; E: identificador del ajuste; F: estado. Se conservan los registros anteriores. La web pública de Apps Script y su lectura externa muestran solo esas mediciones ambientales a quien conozca la URL. La contraseña Wi-Fi se escribe únicamente en Secrets.h.</p></details></article><aside class="card"><h2>Realizar los tres puntos</h2><p>Esta es una comparación y ajuste escolar. La calidad del resultado depende de la referencia y del montaje.</p><div class="steps"><div class="step"><h3>Prepara la comparación</h3><p>Coloca el DHT11 y la zona sensible del termómetro próximos, a la misma altura y separados del ESP32, las manos y fuentes directas de calor.</p></div><div class="step"><h3>Crea tres ambientes suaves</h3><p>Un nivel fresco, uno ambiente y otro templado, separados varios grados y dentro del rango de ambos instrumentos. Puedes usar un recipiente seco con botellas cerradas de agua fresca o templada, sin contacto con los sensores.</p></div><div class="step"><h3>Espera estabilidad y registra</h3><p>La temperatura de interés es la del aire, no la del agua. Evita condensación. No sumerjas el DHT11, no uses hielo directo, vapor, llama ni aire caliente directo. Registra 5 pares estables por punto, separados unos 10 segundos.</p></div><div class="step"><h3>Aplica y verifica</h3><p>Descarga Calibracion.h, reemplázalo en la carpeta ESP32_Monitor y carga el programa. Haz nuevas comparaciones independientes; conserva tanto los aciertos como los errores.</p></div></div></aside></div><article class="card table-card"><h2>La entrega</h2><div class="split" style="margin:18px 0 0"><div><h3>Reporte</h3><p>Objetivo; conexiones; termómetro y su rango/resolución; procedimiento; cinco pares por punto y promedios; ecuación de ajuste; verificación independiente; capturas del monitor; limitaciones y conclusiones basadas en resultados.</p></div><div><h3>Video</h3><p>Muestra ambos instrumentos, los tres niveles reales, la estabilidad, la tabla, la carga del ajuste y una nueva lectura en la web. Evita mostrar contraseñas. No se requiere la presentación de 10 minutos del plan anterior.</p></div></div><details><summary>Si la gráfica no cambia</summary><p>La página consulta cada 60 s; solo aparecen nuevas mediciones cuando el ESP32 envía una fila. Revisa Wi-Fi, el Monitor Serie a 115200, la URL /exec y que hayas publicado una nueva versión. El programa debe mostrar «Registro confirmado por Apps Script».</p></details><details><summary>Qué solucionan las redirecciones</summary><p>Google entrega el contenido mediante otra URL temporal. <code>HTTPC_STRICT_FOLLOW_REDIRECTS</code> permite seguirla. Una tabla vacía no es por sí misma un bloqueo de seguridad. <a href="https://developers.google.com/apps-script/guides/content" target="_blank" rel="noopener">Documentación de Google ↗</a></p></details></article></section>
-</main><footer><span>AMBIENTE / CONTROL Y AUTOMATIZACIÓN</span><span>ESP32 → APPS SCRIPT → GOOGLE SHEETS → WEB</span></footer></div>
-<dialog id="connection"><h2>Conecta tus mediciones</h2><p>Primero instala Code.gs e Index.html y publica una nueva versión en Apps Script. No se enviarán datos de prueba a tu hoja.</p><label for="endpoint">URL de implementación de Google Apps Script</label><input id="endpoint" type="url" spellcheck="false"><label class="checkline"><input type="checkbox" id="installed">Ya instalé los archivos y actualicé la implementación.</label><p class="small">La lectura externa muestra datos ambientales mediante un endpoint público de solo lectura. Para desactivarla, cambia PERMITIR_PANEL_EXTERNO en Code.gs.</p><div id="connectError" class="status-text error" role="alert"></div><div class="actions"><button id="cancelConnect">Cancelar</button><button class="primary" id="confirmConnect">Conectar</button></div></dialog>
+
+<!-- VENTANA PARA CONECTAR EL SENSOR -->
+<dialog id="connection">
+  <h2>Conecta tus mediciones</h2>
+
+  <p>
+    Introduce la dirección de tu implementación
+    de Google Apps Script.
+  </p>
+
+  <label for="endpoint">
+    URL de Google Apps Script
+  </label>
+
+  <input id="endpoint" type="url"
+         spellcheck="false">
+
+  <label class="checkline">
+    <input id="installed" type="checkbox">
+    Ya instalé el código y actualicé
+    la implementación de Apps Script.
+  </label>
+
+  <p id="connectError"
+     class="status-text error"></p>
+
+  <div class="actions">
+    <button id="cancelConnect">Cancelar</button>
+    <button id="confirmConnect" class="primary">
+      Conectar
+    </button>
+  </div>
+</dialog>
+
 <script>
 'use strict';
-const DEFAULT_URL='https://script.google.com/macros/s/AKfycbyleDx6inC-yhJypXzsY__1mS1UGiHCnRTmZmJ-Dr7flWAw54m9UVNeyZVVjebzN7mFHw/exec';
-const $=id=>document.getElementById(id);let mode='none', data=[], endpoint='', busy=false, calc=null, connectionEpoch=0, readError=false;
-const isGas=typeof google!=='undefined' && google.script && google.script.run;
-const fmt=(x,n=1)=>Number(x).toLocaleString('es-MX',{minimumFractionDigits:n,maximumFractionDigits:n});
-const dateFmt=d=>new Date(d).toLocaleString('es-MX',{timeZone:'America/Mexico_City',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'});
-const timeFmt=d=>new Date(d).toLocaleTimeString('es-MX',{timeZone:'America/Mexico_City',hour:'2-digit',minute:'2-digit'});
-function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
-function read(k){try{return JSON.parse(localStorage.getItem(k));}catch(e){return null;}}
-function tab(name){document.querySelectorAll('[role=tabpanel]').forEach(el=>el.hidden=el.id!==name);document.querySelectorAll('[data-tab]').forEach(el=>el.setAttribute('aria-selected',el.dataset.tab===name));}
-document.querySelectorAll('[data-tab]').forEach(el=>{el.onclick=()=>tab(el.dataset.tab);el.onkeydown=e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const tabs=[...document.querySelectorAll('[data-tab]')],i=tabs.indexOf(el),n=(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[n].focus();tab(tabs[n].dataset.tab);};});
-function cells(body,values){const tr=document.createElement('tr');values.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.append(td);});body.append(tr);}
-function statusLabel(r){return ({aplicado:'Ajuste aplicado',sin_ajuste:'Sin ajustar',fuera_intervalo:'Fuera de intervalo',historico:'Histórico · sin verificar',demo:'Simulado'})[r.status]||'Sin verificar';}
-function draw(){const svg=$('chart');svg.replaceChildren();const make=(name,attrs,text)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',name);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(text!==undefined)e.textContent=text;svg.append(e);return e;};
- const left=45,right=675,top=16,bottom=210;let tmin=0,tmax=40,hmin=0,hmax=100;
- if(data.length){tmin=Math.floor(Math.min(...data.map(r=>r.temperature))-1);tmax=Math.ceil(Math.max(...data.map(r=>r.temperature))+1);}
- for(let i=0;i<5;i++){const y=top+(bottom-top)*i/4;make('line',{x1:left,x2:right,y1:y,y2:y,stroke:'#2c393a','stroke-dasharray':'3 5'});if(data.length){make('text',{x:35,y:y+4,fill:'#a2b2b3','font-size':10,'text-anchor':'end'},fmt(tmax-(tmax-tmin)*i/4));make('text',{x:687,y:y+4,fill:'#a2b2b3','font-size':10},String(100-25*i));}}
- if(!data.length)return;const times=data.map(r=>Date.parse(r.time)),minTime=times[0],span=times[times.length-1]-minTime;
- function points(key,min,max){return data.map((r,i)=>[(span?left+(right-left)*(times[i]-minTime)/span:(left+right)/2),bottom-(r[key]-min)/(max-min)*(bottom-top)]);}
- for(const [key,min,max,color] of [['temperature',tmin,tmax,'#d0f49d'],['humidity',hmin,hmax,'#76d8c9']]){const pts=points(key,min,max);make('polyline',{points:pts.map(p=>p.join(',')).join(' '),fill:'none',stroke:color,'stroke-width':2.5,'stroke-linejoin':'round'});const p=pts.at(-1);make('circle',{cx:p[0],cy:p[1],r:4,fill:color});}
- [0,Math.floor((data.length-1)/2),data.length-1].filter((n,i,a)=>a.indexOf(n)===i).forEach(i=>make('text',{x:span?left+(right-left)*(times[i]-minTime)/span:(left+right)/2,y:236,fill:'#a2b2b3','font-size':10,'text-anchor':'middle'},timeFmt(data[i].time)));
-}
-function render(){const last=data.at(-1);$('temp').textContent=last?fmt(last.temperature):'—';$('hum').textContent=last?fmt(last.humidity):'—';$('raw').textContent=last?fmt(last.raw):'—';$('tempNote').textContent=last?statusLabel(last):'Ajuste pendiente de tus tres mediciones';$('lastTime').textContent=last?timeFmt(last.time):'Pendiente';$('sourceLabel').textContent=mode==='demo'?'Demostración':mode==='live'?'Google Sheets':'Sin conectar';$('emptyChart').hidden=!!last;$('csv').disabled=!last;$('refresh').disabled=mode!=='live'||busy;$('rows').replaceChildren();
- if(last){data.slice(-12).reverse().forEach(r=>cells($('rows'),[dateFmt(r.time),fmt(r.raw,2),fmt(r.temperature,2),fmt(r.humidity),statusLabel(r)]));}else cells($('rows'),['Todavía no hay mediciones cargadas.']);
- freshness();draw();}
-function freshness(){const last=data.at(-1);let status='SIN CONECTAR',color='var(--amber)';if(mode==='demo'){status='DATOS SIMULADOS';$('banner').textContent='DEMOSTRACIÓN · Estas lecturas son ficticias. No se guardan en tu hoja ni sirven como evidencia de calibración.';}else if(mode==='live'){if(readError){status='ERROR DE LECTURA';}else if(last && Date.now()-Date.parse(last.time)<=150000 && Date.parse(last.time)<=Date.now()+60000){status='DATOS RECIENTES';color='var(--green)';$('banner').textContent='Lectura conectada. Se consulta la hoja cada 60 segundos. La fecha del último registro indica cuándo midió el sistema.';}else if(last){status='SIN DATOS RECIENTES';$('banner').textContent='Conexión disponible, pero la última medición no es reciente: '+dateFmt(last.time)+'. Revisa que el ESP32 siga enviando.';}else{status='ESPERANDO DATOS';$('banner').textContent='La hoja respondió. Todavía no hay registros válidos para mostrar.';}}
- $('topStatus').textContent=status;$('statusDot').style.background=color;}
-function jsonp(url){return new Promise((resolve,reject)=>{const name='iot_'+Date.now()+'_'+Math.random().toString(36).slice(2),s=document.createElement('script');let done=false;const clean=()=>{s.remove();clearTimeout(timer);window[name]=()=>{};setTimeout(()=>delete window[name],60000);};const fail=()=>{if(done)return;done=true;clean();reject(new Error('No respondió Apps Script. Verifica la nueva versión y el acceso para Cualquier persona.'));};window[name]=value=>{if(done)return;done=true;clean();resolve(value);};const timer=setTimeout(fail,20000);s.onerror=fail;const u=new URL(url);u.searchParams.set('action','read');u.searchParams.set('callback',name);u.searchParams.set('_',Date.now());s.src=u.href;document.head.append(s);});}
-function gasRead(){return new Promise((resolve,reject)=>{let finished=false;const timer=setTimeout(()=>{finished=true;reject(new Error('Apps Script tardó demasiado. Puedes intentar actualizar.'));},20000);google.script.run.withSuccessHandler(v=>{if(!finished){finished=true;clearTimeout(timer);resolve(v);}}).withFailureHandler(e=>{if(!finished){finished=true;clearTimeout(timer);reject(e);}}).getDashboardData();});}
-async function refresh(){if(busy||mode!=='live')return;const epoch=connectionEpoch;busy=true;$('refresh').disabled=true;$('refresh').textContent='Consultando…';try{const v=await(isGas?gasRead():jsonp(endpoint));if(epoch!==connectionEpoch||mode!=='live')return;if(!v||v.ok!==true||!Array.isArray(v.rows))throw new Error(v&&v.error||'Respuesta incompatible. Instala el Code.gs entregado.');const valid=v.rows.filter(r=>r&&typeof r.temperature==='number'&&Number.isFinite(r.temperature)&&typeof r.humidity==='number'&&Number.isFinite(r.humidity)&&r.humidity>=0&&r.humidity<=100&&typeof r.raw==='number'&&Number.isFinite(r.raw)&&typeof r.time==='string'&&Number.isFinite(Date.parse(r.time)));if(valid.length!==v.rows.length)throw new Error('La respuesta contiene lecturas inválidas. Se conserva la última lectura válida.');data=valid.sort((a,b)=>Date.parse(a.time)-Date.parse(b.time)).slice(-120);readError=false;render();}catch(e){if(epoch!==connectionEpoch||mode!=='live')return;readError=true;$('banner').textContent='No se pudo actualizar: '+e.message+(data.length?' Se conservan las últimas lecturas; pueden estar desactualizadas.':'');freshness();}finally{busy=false;$('refresh').textContent='Actualizar lecturas';$('refresh').disabled=mode!=='live';}}
-$('demo').onclick=()=>{connectionEpoch++;mode='demo';readError=false;data=Array.from({length:45},(_,i)=>({time:new Date(Date.now()-(44-i)*60000).toISOString(),temperature:24+Math.sin(i/8)*.7+i*.02,raw:24+Math.sin(i/8)*.7+i*.02,humidity:48+Math.sin(i/11)*4,status:'demo'}));render();};
-$('endpoint').value=DEFAULT_URL;$('connect').onclick=()=>{if(isGas){connectionEpoch++;mode='live';data=[];readError=false;render();refresh();}else{$('connection').showModal();$('connectError').textContent='';}};$('cancelConnect').onclick=()=>$('connection').close();
-$('confirmConnect').onclick=()=>{if(!$('installed').checked){$('connectError').textContent='Confirma primero la instalación de los archivos.';return;}let u;try{u=new URL($('endpoint').value.trim());if(u.protocol!=='https:'||u.hostname!=='script.google.com'||u.username||u.password||u.port||!/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname))throw 0;}catch(e){$('connectError').textContent='Usa una URL https://script.google.com/macros/s/…/exec válida.';return;}u.search='';u.hash='';endpoint=u.href;connectionEpoch++;mode='live';data=[];readError=false;$('connection').close();render();refresh();};
-$('refresh').onclick=refresh;
-function download(filename,text,type){const blob=new Blob([text],{type:type||'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-function csv(rows){return '\uFEFF'+rows.map(r=>r.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');}
-$('csv').onclick=()=>download(mode==='demo'?'DEMO_lecturas_simuladas.csv':'lecturas_iot.csv',csv([['fecha_ISO','temperatura_original_C','temperatura_salida_C','humedad_HR','estado','origen'],...data.map(r=>[r.time,r.raw,r.temperature,r.humidity,r.status,mode==='demo'?'SIMULADO':'Apps Script'])]),'text/csv;charset=utf-8');
-function validatePoints(x,y){if([...x,...y].some(v=>!Number.isFinite(v)))throw new Error('Completa los seis valores con números válidos.');if(!(x[0]<x[1]&&x[1]<x[2]))throw new Error('Los tres promedios DHT11 deben ser distintos y estar ordenados de menor a mayor.');if(!(y[0]<y[1]&&y[1]<y[2]))throw new Error('La referencia también debe aumentar. Revisa el orden y la estabilidad.');if([...x,...y].some(v=>v<0||v>50))throw new Error('Para este protocolo escolar, usa puntos entre 0 y 50 °C y verifica el rango de tu versión del DHT11 y del termómetro.');if(Math.min(x[1]-x[0],x[2]-x[1],y[1]-y[0],y[2]-y[1])<2)throw new Error('Separa los niveles al menos 2 °C; diferencias pequeñas dificultan un ajuste útil.');return {x,y,id:'cal_'+Date.now()};}
-function interpolate(x,xs,ys){if(x<xs[0]||x>xs[2])return x;const j=x<=xs[1]?0:1;return ys[j]+(x-xs[j])*(ys[j+1]-ys[j])/(xs[j+1]-xs[j]);}
-function headerFor(c){return '#pragma once\n// Ajuste escolar por tres puntos. No extrapola fuera del intervalo.\nconst bool CALIBRACION_ACTIVA = true;\nconst float PUNTOS_DHT[3] = {'+c.x.map(v=>Number(v).toFixed(6)+'f').join(', ')+'};\nconst float PUNTOS_REF[3] = {'+c.y.map(v=>Number(v).toFixed(6)+'f').join(', ')+'};\nconst char* CALIBRACION_ID = "'+c.id+'";\n';}
 
-function calReadHumidity(){
-  const raw=['hx1','hy1','hx2','hy2','hx3','hy3'].map(id=>$(id).value.trim());
-  if(raw.every(v=>v===''))return null;
-  if(raw.some(v=>v===''))throw new Error('Completa los seis valores de humedad o deja todos vacíos si aún no tienes higrómetro.');
-  const values=raw.map(Number);
-  if(values.some(v=>!Number.isFinite(v)||v<0||v>100))throw new Error('La humedad debe estar entre 0 y 100 % HR.');
-  const hx=[values[0],values[2],values[4]],hy=[values[1],values[3],values[5]];
-  if(!(hx[0]<hx[1]&&hx[1]<hx[2]))throw new Error('Para corregir humedad, los valores DHT11 de humedad deben aumentar de un punto al siguiente. Reordena los pares de humedad o usa mediciones adecuadas.');
-  return {hx,hy};
+/* CONFIGURACIÓN */
+const DEFAULT_URL =
+'https://script.google.com/macros/s/AKfycbyleDx6inC-yhJypXzsY__1mS1UGiHCnRTmZmJ-Dr7flWAw54m9UVNeyZVVjebzN7mFHw/exec';
+
+const $ = id => document.getElementById(id);
+
+let mode = 'none';
+let data = [];
+let endpoint = DEFAULT_URL;
+let busy = false;
+let readError = false;
+let connectionEpoch = 0;
+let calc = null;
+
+const isGas = typeof google !== 'undefined'
+  && google.script && google.script.run;
+
+function fmt(value, decimals = 2) {
+  return Number(value).toLocaleString('es-MX', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals
+  });
 }
-function calPlotSeries(target,series,units){
-  const box=$(target);box.replaceChildren();
-  if(!series.length){box.textContent='Sin mediciones disponibles.';return;}
-  const W=570,H=270,left=52,right=54,top=22,bottom=54,plotW=W-left-right,plotH=H-top-bottom;
-  const ns='http://www.w3.org/2000/svg';
-  const svg=document.createElementNS(ns,'svg');
-  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');
-  svg.setAttribute('aria-label',series.map(s=>s.label).join(', '));
-  svg.style.cssText='width:100%;height:auto;max-height:340px;display:block';
-  const el=(tag,attrs,txt)=>{const node=document.createElementNS(ns,tag);Object.entries(attrs||{}).forEach(([k,v])=>node.setAttribute(k,v));if(txt!==undefined)node.textContent=txt;svg.append(node);return node;};
-  const x=i=>left+plotW*(i/2);
-  const axes={};
-  for(const unit of units){
-    const vals=series.filter(s=>s.unit===unit).flatMap(s=>s.values);
-    let min=Math.min(...vals),max=Math.max(...vals);
-    const pad=Math.max((max-min)*0.18,unit==='°C'?1:2);
-    min-=pad;max+=pad;if(unit==='% HR') {min=Math.max(0,min);max=Math.min(100,max);}
-    if(max<=min)max=min+1;
-    axes[unit]={min,max,y:v=>top+plotH-(v-min)/(max-min)*plotH};
+
+function dateFmt(value) {
+  return new Date(value).toLocaleString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+function timeFmt(value) {
+  return new Date(value).toLocaleTimeString('es-MX', {
+    timeZone: 'America/Mexico_City',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function cells(body, values) {
+  const tr = document.createElement('tr');
+
+  values.forEach(value => {
+    const td = document.createElement('td');
+    td.textContent = value;
+    tr.appendChild(td);
+  });
+
+  body.appendChild(tr);
+}
+
+/* NAVEGACIÓN */
+function tab(name) {
+  document.querySelectorAll('[role="tabpanel"]')
+    .forEach(el => {
+      el.hidden = el.id !== name;
+    });
+
+  document.querySelectorAll('[data-tab]')
+    .forEach(el => {
+      el.setAttribute(
+        'aria-selected',
+        el.dataset.tab === name
+      );
+    });
+}
+
+document.querySelectorAll('[data-tab]')
+  .forEach(el => {
+    el.onclick = () => tab(el.dataset.tab);
+  });
+
+/* DESCARGA DE ARCHIVOS */
+function download(filename, text, type = 'text/plain') {
+  const blob = new Blob([text], {
+    type: type + ';charset=utf-8'
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function csv(rows) {
+  return '\uFEFF' + rows.map(row =>
+    row.map(value =>
+      '"' + String(value).replaceAll('"', '""') + '"'
+    ).join(',')
+  ).join('\r\n');
+}
+
+/* MONITOR EN VIVO */
+function statusLabel(r) {
+  const labels = {
+    aplicado: 'Ajuste aplicado',
+    sin_ajuste: 'Sin ajustar',
+    fuera_intervalo: 'Fuera de intervalo',
+    historico: 'Histórico · sin verificar',
+    demo: 'Simulado'
+  };
+
+  return labels[r.status] || 'Sin verificar';
+}
+
+function draw() {
+  const svg = $('chart');
+  svg.replaceChildren();
+
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function make(tag, attrs, content) {
+    const el = document.createElementNS(NS, tag);
+
+    Object.entries(attrs).forEach(([key, value]) => {
+      el.setAttribute(key, value);
+    });
+
+    if (content !== undefined) {
+      el.textContent = content;
+    }
+
+    svg.appendChild(el);
+    return el;
   }
-  const first=units[0],second=units[1];
-  for(let i=0;i<=4;i++){
-    const yy=top+plotH*i/4;
-    el('line',{x1:left,y1:yy,x2:W-right,y2:yy,stroke:'#546462','stroke-opacity':'.4','stroke-dasharray':'3 5'});
-    el('text',{x:left-7,y:yy+4,fill:'#c1cfcb','font-size':12,'text-anchor':'end'},(axes[first].max-(axes[first].max-axes[first].min)*i/4).toFixed(1));
-    if(second)el('text',{x:W-right+8,y:yy+4,fill:'#c1cfcb','font-size':12},(axes[second].max-(axes[second].max-axes[second].min)*i/4).toFixed(1));
+
+  if (!data.length) return;
+
+  const left = 45;
+  const right = 675;
+  const top = 16;
+  const bottom = 210;
+
+  const temps = data.map(r => r.temperature);
+
+  const tmin = Math.floor(Math.min(...temps) - 1);
+  const tmax = Math.ceil(Math.max(...temps) + 1);
+
+  const times = data.map(r => Date.parse(r.time));
+  const minTime = times[0];
+  const span = times[times.length - 1] - minTime;
+
+  function x(i) {
+    return span
+      ? left + (right - left) *
+        (times[i] - minTime) / span
+      : (left + right) / 2;
   }
-  [0,1,2].forEach(i=>el('text',{x:x(i),y:H-bottom+21,fill:'#c1cfcb','font-size':12,'text-anchor':'middle'},`Punto ${i+1}`));
-  series.forEach(s=>{
-    const y=axes[s.unit].y;
-    el('polyline',{points:s.values.map((v,i)=>`${x(i)},${y(v)}`).join(' '),fill:'none',stroke:s.color,'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'});
-    s.values.forEach((v,i)=>{
-      el('circle',{cx:x(i),cy:y(v),r:4,fill:s.color});
-      const offset=s.label.includes('referencia')?17:-10;
-      el('text',{x:x(i),y:y(v)+offset,fill:s.color,'font-size':11,'text-anchor':'middle'},v.toFixed(1));
+
+  function y(value, min, max) {
+    return bottom -
+      (value - min) / (max - min) *
+      (bottom - top);
+  }
+
+  for (let i = 0; i < 5; i++) {
+    const yy = top + (bottom - top) * i / 4;
+
+    make('line', {
+      x1: left,
+      x2: right,
+      y1: yy,
+      y2: yy,
+      stroke: '#2c393a',
+      'stroke-dasharray': '3 5'
+    });
+
+    make('text', {
+      x: 35,
+      y: yy + 4,
+      fill: '#a2b2b3',
+      'font-size': 10,
+      'text-anchor': 'end'
+    }, fmt(tmax - (tmax - tmin) * i / 4, 1));
+
+    make('text', {
+      x: 687,
+      y: yy + 4,
+      fill: '#a2b2b3',
+      'font-size': 10
+    }, String(100 - i * 25));
+  }
+
+  const series = [
+    ['temperature', tmin, tmax, '#d0f49d'],
+    ['humidity', 0, 100, '#76d8c9']
+  ];
+
+  series.forEach(([key, min, max, color]) => {
+    const points = data.map((r, i) => [
+      x(i), y(r[key], min, max)
+    ]);
+
+    make('polyline', {
+      points: points.map(p => p.join(',')).join(' '),
+      fill: 'none',
+      stroke: color,
+      'stroke-width': 2.5
+    });
+
+    const last = points[points.length - 1];
+
+    make('circle', {
+      cx: last[0],
+      cy: last[1],
+      r: 4,
+      fill: color
     });
   });
-  box.append(svg);
-  const legend=document.createElement('div');legend.style.cssText='display:flex;flex-wrap:wrap;gap:8px 15px;font-size:12px;margin-top:5px';
-  series.forEach(s=>{const label=document.createElement('span');label.style.color=s.color;label.textContent='● '+s.label;legend.append(label);});box.append(legend);
+
+  [0, Math.floor((data.length - 1) / 2),
+   data.length - 1]
+    .filter((n, i, arr) => arr.indexOf(n) === i)
+    .forEach(i => {
+      make('text', {
+        x: x(i),
+        y: 236,
+        fill: '#a2b2b3',
+        'font-size': 10,
+        'text-anchor': 'middle'
+      }, timeFmt(data[i].time));
+    });
 }
-function calRenderResults(c,h){
-  const T=c.x.map((v,i)=>v-c.y[i]);
-  const series=[
-    {label:'DHT11 temperatura (°C)',unit:'°C',values:c.x,color:'#c8ef92'},
-    {label:'Temperatura referencia (°C)',unit:'°C',values:c.y,color:'#f6bc79'}
-  ];
-  if(h){
-    series.push({label:'DHT11 humedad (% HR)',unit:'% HR',values:h.hx,color:'#70d9d1'});
-    series.push({label:'Humedad referencia (% HR)',unit:'% HR',values:h.hy,color:'#b6a4ff'});
+
+function render() {
+  const last = data[data.length - 1];
+
+  $('temp').textContent =
+    last ? fmt(last.temperature, 1) : '—';
+
+  $('hum').textContent =
+    last ? fmt(last.humidity, 1) : '—';
+
+  $('raw').textContent =
+    last ? fmt(last.raw, 1) : '—';
+
+  $('tempNote').textContent =
+    last ? statusLabel(last) : 'Ajuste pendiente';
+
+  $('lastTime').textContent =
+    last ? timeFmt(last.time) : 'Pendiente';
+
+  $('sourceLabel').textContent =
+    mode === 'demo' ? 'Demostración' :
+    mode === 'live' ? 'Google Sheets' :
+    'Sin conectar';
+
+  $('emptyChart').hidden = !!last;
+  $('csv').disabled = !last;
+  $('refresh').disabled = mode !== 'live' || busy;
+
+  $('rows').replaceChildren();
+
+  if (last) {
+    data.slice(-12).reverse().forEach(r => {
+      cells($('rows'), [
+        dateFmt(r.time),
+        fmt(r.raw, 2),
+        fmt(r.temperature, 2),
+        fmt(r.humidity, 1),
+        statusLabel(r)
+      ]);
+    });
+  } else {
+    cells($('rows'), [
+      'Todavía no hay mediciones cargadas.'
+    ]);
   }
-  calPlotSeries('calCompare',series,h?['°C','% HR']:['°C']);
-  const errors=[{label:'Error temperatura (°C)',unit:'°C',values:T,color:'#f6bc79'}];
-  if(h)errors.push({label:'Error humedad (pp)',unit:'pp',values:h.hx.map((v,i)=>v-h.hy[i]),color:'#70d9d1'});
-  calPlotSeries('calErrors',errors,h?['°C','pp']:['°C']);
-  $('calRows').replaceChildren();
-  c.x.forEach((v,i)=>{
-    const hum=h?h.hx[i]:null,ref=h?h.hy[i]:null;
-    cells($('calRows'),[i+1,fmt(v,2),fmt(c.y[i],2),fmt(T[i],2),fmt(interpolate(v,c.x,c.y),2),h?fmt(hum,2):'—',h?fmt(ref,2):'—',h?fmt(hum-ref,2):'—',h?fmt(interpolate(hum,h.hx,h.hy),2):'—']);
+
+  draw();
+  freshness();
+}
+
+function freshness() {
+  const last = data[data.length - 1];
+  let status = 'SIN CONECTAR';
+  let color = 'var(--amber)';
+
+  if (mode === 'demo') {
+    status = 'DATOS SIMULADOS';
+    $('banner').textContent =
+      'DEMOSTRACIÓN: las lecturas son ficticias.';
+  } else if (mode === 'live') {
+    if (readError) {
+      status = 'ERROR DE LECTURA';
+    } else if (
+      last &&
+      Date.now() - Date.parse(last.time) <= 150000 &&
+      Date.parse(last.time) <= Date.now() + 60000
+    ) {
+      status = 'DATOS RECIENTES';
+      color = 'var(--green)';
+      $('banner').textContent =
+        'Lectura conectada. Se consulta cada 60 segundos.';
+    } else if (last) {
+      status = 'SIN DATOS RECIENTES';
+      $('banner').textContent =
+        'La última lectura no es reciente: ' +
+        dateFmt(last.time);
+    } else {
+      status = 'ESPERANDO DATOS';
+      $('banner').textContent =
+        'La hoja respondió, pero no hay registros válidos.';
+    }
+  }
+
+  $('topStatus').textContent = status;
+  $('statusDot').style.background = color;
+}
+
+/* CONEXIÓN CON APPS SCRIPT */
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const name = 'iot_' + Date.now() + '_' +
+      Math.random().toString(36).slice(2);
+
+    const script = document.createElement('script');
+    let done = false;
+    let timer;
+
+    function clean() {
+      script.remove();
+      clearTimeout(timer);
+      window[name] = () => {};
+      setTimeout(() => delete window[name], 60000);
+    }
+
+    function fail() {
+      if (done) return;
+      done = true;
+      clean();
+      reject(new Error(
+        'No respondió Apps Script. Verifica la implementación.'
+      ));
+    }
+
+    window[name] = value => {
+      if (done) return;
+      done = true;
+      clean();
+      resolve(value);
+    };
+
+    timer = setTimeout(fail, 20000);
+    script.onerror = fail;
+
+    const u = new URL(url);
+    u.searchParams.set('action', 'read');
+    u.searchParams.set('callback', name);
+    u.searchParams.set('_', Date.now());
+
+    script.src = u.href;
+    document.head.appendChild(script);
   });
 }
 
-const pointIds=['x1','y1','x2','y2','x3','y3','hx1','hy1','hx2','hy2','hx3','hy3'];
-function invalidate(){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').classList.remove('error');$('calcResult').textContent='Datos modificados. Calcula de nuevo para generar el archivo.';$('calRows').replaceChildren();cells($('calRows'),['Pendiente de cálculo.']);$('calRows').firstElementChild.firstElementChild.colSpan=9;$('calCompare').textContent='Modificaste las mediciones. Pulsa «Calcular mi ajuste».';$('calErrors').textContent='Pendiente de cálculo.';save('ambiente_cal_draft',pointIds.map(id=>$(id).value));}
-pointIds.forEach(id=>$(id).oninput=invalidate);$('realPoints').onchange=invalidate;
-$('calForm').onsubmit=e=>{e.preventDefault();try{const x=[1,2,3].map(i=>$('x'+i).value.trim()===''?NaN:Number($('x'+i).value)),y=[1,2,3].map(i=>$('y'+i).value.trim()===''?NaN:Number($('y'+i).value));if(!$('realPoints').checked)throw new Error('Confirma que son mediciones reales.');calc=validatePoints(x,y);const humidity=calReadHumidity();calc.humidity=humidity;$('calcResult').classList.remove('error');$('calcResult').textContent='Ajuste calculado en el intervalo DHT11 '+fmt(x[0],2)+' a '+fmt(x[2],2)+' °C.\nTramo 1: pendiente '+fmt((y[1]-y[0])/(x[1]-x[0]),4)+' · Tramo 2: pendiente '+fmt((y[2]-y[1])/(x[2]-x[1]),4)+'\nPendiente de cargar al ESP32 y verificar con nuevas mediciones.';$('downloadHeader').disabled=false;$('downloadCal').disabled=false;$('calRows').replaceChildren();calRenderResults(calc,humidity);}catch(err){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').textContent=err.message;$('calcResult').classList.add('error');}};
-$('downloadHeader').onclick=()=>{if(calc)download('Calibracion.h',headerFor(calc));};$('downloadCal').onclick=()=>{if(calc)download('ajuste_tres_puntos.csv',csv([['punto','DHT_temperatura_C','referencia_temperatura_C','error_temperatura_C','temperatura_corregida_C','DHT_humedad_pct','referencia_humedad_pct','error_humedad_pp','humedad_corregida_pct','id_ajuste'],...calc.x.map((x,i)=>[i+1,x,calc.y[i],x-calc.y[i],interpolate(x,calc.x,calc.y),calc.humidity?calc.humidity.hx[i]:'',calc.humidity?calc.humidity.hy[i]:'',calc.humidity?calc.humidity.hx[i]-calc.humidity.hy[i]:'',calc.humidity?interpolate(calc.humidity.hx[i],calc.humidity.hx,calc.humidity.hy):'',calc.id])]),'text/csv;charset=utf-8');};
-const draft=read('ambiente_cal_draft');if(Array.isArray(draft)&&draft.length===pointIds.length)pointIds.forEach((id,i)=>$(id).value=typeof draft[i]==='string'?draft[i]:'');
-if(isGas){mode='live';$('connect').textContent='Leer mi sensor ↗';}render();if(isGas)refresh();setInterval(()=>{if(mode==='live')refresh();},60000);setInterval(freshness,10000);
-</script></body></html>
-$('calForm').onsubmit=e=>{e.preventDefault();try{const x=[1,2,3].map(i=>$('x'+i).value.trim()===''?NaN:Number($('x'+i).value)),y=[1,2,3].map(i=>$('y'+i).value.trim()===''?NaN:Number($('y'+i).value));if(!$('realPoints').checked)throw new Error('Confirma que son mediciones reales.');calc=validatePoints(x,y);$('calcResult').classList.remove('error');$('calcResult').textContent='Ajuste calculado en el intervalo DHT11 '+fmt(x[0],2)+' a '+fmt(x[2],2)+' °C.\nTramo 1: pendiente '+fmt((y[1]-y[0])/(x[1]-x[0]),4)+' · Tramo 2: pendiente '+fmt((y[2]-y[1])/(x[2]-x[1]),4)+'\nPendiente de cargar al ESP32 y verificar con nuevas mediciones.';$('downloadHeader').disabled=false;$('downloadCal').disabled=false;$('calRows').replaceChildren();x.forEach((v,i)=>cells($('calRows'),[i+1,fmt(v,2),fmt(y[i],2),fmt(v-y[i],2),fmt(interpolate(v,x,y),2)]));}catch(err){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').textContent=err.message;$('calcResult').classList.add('error');}};
-$('downloadHeader').onclick=()=>{if(calc)download('Calibracion.h',headerFor(calc));};$('downloadCal').onclick=()=>{if(calc)download('ajuste_tres_puntos.csv',csv([['punto','DHT_promedio_C','referencia_promedio_C','error_antes_C','salida_calculada_C','id_ajuste'],...calc.x.map((x,i)=>[i+1,x,calc.y[i],x-calc.y[i],interpolate(x,calc.x,calc.y),calc.id])]),'text/csv;charset=utf-8');};
-const draft=read('ambiente_cal_draft');if(Array.isArray(draft)&&draft.length===6)pointIds.forEach((id,i)=>$(id).value=typeof draft[i]==='string'?draft[i]:'');
-if(isGas){mode='live';$('connect').textContent='Leer mi sensor ↗';}render();if(isGas)refresh();setInterval(()=>{if(mode==='live')refresh();},60000);setInterval(freshness,10000);
-</script></body></html>
+function gasRead() {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
+      .getDashboardData();
+  });
+}
+
+async function refresh() {
+  if (busy || mode !== 'live') return;
+
+  const epoch = connectionEpoch;
+  busy = true;
+  $('refresh').disabled = true;
+  $('refresh').textContent = 'Consultando…';
+
+  try {
+    const response = await (
+      isGas ? gasRead() : jsonp(endpoint)
+    );
+
+    if (epoch !== connectionEpoch ||
+        mode !== 'live') return;
+
+    if (!response ||
+        response.ok !== true ||
+        !Array.isArray(response.rows)) {
+      throw new Error(
+        response?.error || 'Respuesta incompatible'
+      );
+    }
+
+    const valid = response.rows.filter(r =>
+      r &&
+      typeof r.temperature === 'number' &&
+      Number.isFinite(r.temperature) &&
+      typeof r.humidity === 'number' &&
+      Number.isFinite(r.humidity) &&
+      r.humidity >= 0 &&
+      r.humidity <= 100 &&
+      typeof r.raw === 'number' &&
+      Number.isFinite(r.raw) &&
+      typeof r.time === 'string' &&
+      Number.isFinite(Date.parse(r.time))
+    );
+
+    if (valid.length !== response.rows.length) {
+      throw new Error(
+        'La respuesta contiene mediciones inválidas'
+      );
+    }
+
+    data = valid.sort((a, b) =>
+      Date.parse(a.time) - Date.parse(b.time)
+    ).slice(-120);
+
+    readError = false;
+    render();
+
+  } catch (err) {
+    if (epoch !== connectionEpoch ||
+        mode !== 'live') return;
+
+    readError = true;
+    $('banner').textContent =
+      'Error al actualizar: ' + err.message;
+    freshness();
+
+  } finally {
+    busy = false;
+    $('refresh').textContent = 'Actualizar lecturas';
+    $('refresh').disabled = mode !== 'live';
+  }
+}
+
+$('endpoint').value = DEFAULT_URL;
+
+$('connect').onclick = () => {
+  if (isGas) {
+    connectionEpoch++;
+    mode = 'live';
+    data = [];
+    readError = false;
+    render();
+    refresh();
+  } else {
+    $('connection').showModal();
+    $('connectError').textContent = '';
+  }
+};
+
+$('cancelConnect').onclick = () => {
+  $('connection').close();
+};
+
+$('confirmConnect').onclick = () => {
+  if (!$('installed').checked) {
+    $('connectError').textContent =
+      'Confirma primero la instalación de Apps Script.';
+    return;
+  }
+
+  let u;
+
+  try {
+    u = new URL($('endpoint').value.trim());
+
+    if (
+      u.protocol !== 'https:' ||
+      u.hostname !== 'script.google.com' ||
+      u.username || u.password || u.port ||
+      !/^\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(u.pathname)
+    ) {
+      throw new Error('URL inválida');
+    }
+  } catch (err) {
+    $('connectError').textContent =
+      'Introduce una URL válida que termine en /exec.';
+    return;
+  }
+
+  u.search = '';
+  u.hash = '';
+
+  endpoint = u.href;
+  connectionEpoch++;
+  mode = 'live';
+  data = [];
+  readError = false;
+
+  $('connection').close();
+  render();
+  refresh();
+};
+
+$('refresh').onclick = refresh;
+
+$('demo').onclick = () => {
+  connectionEpoch++;
+  mode = 'demo';
+  readError = false;
+
+  data = Array.from({length:45}, (_, i) => {
+    const t = 24 + Math.sin(i / 8) * 0.7;
+
+    return {
+      time: new Date(
+        Date.now() - (44 - i) * 60000
+      ).toISOString(),
+      temperature: t,
+      raw: t,
+      humidity: 48 + Math.sin(i / 11) * 4,
+      status: 'demo'
+    };
+  });
+
+  render();
+};
+
+$('csv').onclick = () => {
+  const rows = [
+    ['Fecha ISO', 'Temperatura original',
+     'Temperatura salida', 'Humedad HR',
+     'Estado'],
+    ...data.map(r => [
+      r.time, r.raw, r.temperature,
+      r.humidity, r.status
+    ])
+  ];
+
+  download(
+    'lecturas_iot.csv',
+    csv(rows),
+    'text/csv'
+  );
+};
+
+/* CALIBRACIÓN DE TEMPERATURA */
+function validatePoints(x, y) {
+  if ([...x, ...y].some(v => !Number.isFinite(v))) {
+    throw new Error(
+      'Completa los seis valores con números válidos.'
+    );
+  }
+
+  if (!(x[0] < x[1] && x[1] < x[2])) {
+    throw new Error(
+      'Las temperaturas del DHT11 deben aumentar.'
+    );
+  }
+
+  if (!(y[0] < y[1] && y[1] < y[2])) {
+    throw new Error(
+      'Las temperaturas de referencia deben aumentar.'
+    );
+  }
+
+  if ([...x, ...y].some(v => v < 0 || v > 50)) {
+    throw new Error(
+      'Verifica que los valores estén entre 0 y 50 °C.'
+    );
+  }
+
+  if (Math.min(
+    x[1] - x[0],
+    x[2] - x[1],
+    y[1] - y[0],
+    y[2] - y[1]
+  ) < 2) {
+    throw new Error(
+      'Separa los niveles al menos 2 °C.'
+    );
+  }
+
+  return {
+    x, y,
+    id: 'cal_' + Date.now()
+  };
+}
+
+function interpolate(value, xs, ys) {
+  if (value < xs[0] || value > xs[2]) {
+    return value;
+  }
+
+  const j = value <= xs[1] ? 0 : 1;
+
+  return ys[j] +
+    (value - xs[j]) *
+    (ys[j + 1] - ys[j]) /
+    (xs[j + 1] - xs[j]);
+}
+
+/* DIBUJO DE GRÁFICAS DE CALIBRACIÓN */
+function plotCalibration(targetId, series, zeroLine = false) {
+  const target = $(targetId);
+  target.replaceChildren();
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = 570;
+  const H = 280;
+  const L = 58;
+  const R = 25;
+  const T = 22;
+  const B = 60;
+
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('role', 'img');
+  svg.setAttribute(
+    'aria-label',
+    series.map(s => s.label).join(', ')
+  );
+  svg.style.width = '100%';
+
+  function element(tag, attrs, content) {
+    const el = document.createElementNS(NS, tag);
+
+    Object.entries(attrs).forEach(([key, value]) => {
+      el.setAttribute(key, value);
+    });
+
+    if (content !== undefined) {
+      el.textContent = content;
+    }
+
+    svg.appendChild(el);
+    return el;
+  }
+
+  const values = series.flatMap(s => s.values);
+
+  let min = Math.min(...values);
+  let max = Math.max(...values);
+
+  if (zeroLine) {
+    min = Math.min(min, 0);
+    max = Math.max(max, 0);
+  }
+
+  const padding = Math.max((max - min) * 0.2, 0.5);
+  min -= padding;
+  max += padding;
+
+  const x = i => L + (W - L - R) * i / 2;
+  const y = value =>
+    T + (H - T - B) * (max - value) / (max - min);
+
+  for (let i = 0; i <= 4; i++) {
+    const yy = T + (H - T - B) * i / 4;
+    const value = max - (max - min) * i / 4;
+
+    element('line', {
+      x1: L,
+      x2: W - R,
+      y1: yy,
+      y2: yy,
+      stroke: '#405050',
+      'stroke-dasharray': '3 5'
+    });
+
+    element('text', {
+      x: L - 8,
+      y: yy + 4,
+      fill: '#a2b2b3',
+      'font-size': 12,
+      'text-anchor': 'end'
+    }, fmt(value, 1));
+  }
+
+  if (zeroLine) {
+    element('line', {
+      x1: L,
+      x2: W - R,
+      y1: y(0),
+      y2: y(0),
+      stroke: '#eff5f0',
+      'stroke-width': 1.5
+    });
+  }
+
+  [0, 1, 2].forEach(i => {
+    element('text', {
+      x: x(i),
+      y: H - B + 23,
+      fill: '#a2b2b3',
+      'font-size': 12,
+      'text-anchor': 'middle'
+    }, 'Punto ' + (i + 1));
+  });
+
+  series.forEach(s => {
+    element('polyline', {
+      points: s.values.map((v, i) =>
+        `${x(i)},${y(v)}`
+      ).join(' '),
+      fill: 'none',
+      stroke: s.color,
+      'stroke-width': 3
+    });
+
+    s.values.forEach((value, i) => {
+      element('circle', {
+        cx: x(i),
+        cy: y(value),
+        r: 4,
+        fill: s.color
+      });
+    });
+  });
+
+  target.appendChild(svg);
+
+  const legend = document.createElement('div');
+  legend.style.cssText =
+    'display:flex;flex-wrap:wrap;gap:15px;font-size:12px';
+
+  series.forEach(s => {
+    const span = document.createElement('span');
+    span.style.color = s.color;
+    span.textContent = '● ' + s.label;
+    legend.appendChild(span);
+  });
+
+  target.appendChild(legend);
+}
+
+/* TABLA Y GRÁFICAS DE RESULTADOS */
+function showCalibration(c) {
+  const originalError = c.x.map(
+    (v, i) => v - c.y[i]
+  );
+
+  const corrected = c.x.map(
+    v => interpolate(v, c.x, c.y)
+  );
+
+  const correctedError = corrected.map(
+    (v, i) => v - c.y[i]
+  );
+
+  plotCalibration('calCompare', [
+    {
+      label: 'DHT11 original',
+      values: c.x,
+      color: '#d0f49d'
+    },
+    {
+      label: 'Termómetro de referencia',
+      values: c.y,
+      color: '#76d8c9'
+    },
+    {
+      label: 'Temperatura corregida',
+      values: corrected,
+      color: '#f6bd71'
+    }
+  ]);
+
+  plotCalibration('calErrors', [
+    {
+      label: 'Error original °C',
+      values: originalError,
+      color: '#f6bd71'
+    },
+    {
+      label: 'Error corregido en puntos de ajuste °C',
+      values: correctedError,
+      color: '#76d8c9'
+    }
+  ], true);
+
+  $('calTable').replaceChildren();
+
+  c.x.forEach((value, i) => {
+    cells($('calTable'), [
+      i + 1,
+      fmt(value),
+      fmt(c.y[i]),
+      fmt(originalError[i]),
+      fmt(Math.abs(originalError[i])),
+      fmt(corrected[i]),
+      fmt(correctedError[i])
+    ]);
+  });
+}
+
+/* ARCHIVO PARA ARDUINO */
+function headerFor(c) {
+  return [
+    '#pragma once',
+    '// Ajuste de temperatura en tres puntos.',
+    '// No extrapola fuera del intervalo.',
+    'const bool CALIBRACION_ACTIVA = true;',
+    'const float PUNTOS_DHT[3] = {' +
+      c.x.map(v => Number(v).toFixed(6) + 'f')
+        .join(', ') + '};',
+    'const float PUNTOS_REF[3] = {' +
+      c.y.map(v => Number(v).toFixed(6) + 'f')
+        .join(', ') + '};',
+    'const char* CALIBRACION_ID = "' + c.id + '";',
+    ''
+  ].join('\n');
+}
+
+function invalidateCalibration() {
+  calc = null;
+
+  $('downloadCal').disabled = true;
+  $('downloadCalCSV').disabled = true;
+
+  $('calResult').textContent =
+    'Datos modificados. Calcula de nuevo.';
+
+  $('calTable').replaceChildren();
+  cells($('calTable'), [
+    'Pendiente de cálculo.'
+  ]);
+
+  $('calCompare').textContent =
+    'Pendiente de cálculo.';
+
+  $('calErrors').textContent =
+    'Pendiente de cálculo.';
+}
+
+['x1','y1','x2','y2','x3','y3']
+  .forEach(id => {
+    $(id).addEventListener(
+      'input',
+      invalidateCalibration
+    );
+  });
+
+$('calForm').onsubmit = event => {
+  event.preventDefault();
+
+  try {
+    const x = [1, 2, 3].map(i =>
+      $('x' + i).value.trim() === ''
+        ? NaN
+        : Number($('x' + i).value)
+    );
+
+    const y = [1, 2, 3].map(i =>
+      $('y' + i).value.trim() === ''
+        ? NaN
+        : Number($('y' + i).value)
+    );
+
+    if (!$('realPoints').checked) {
+      throw new Error(
+        'Confirma que las mediciones son reales.'
+      );
+    }
+
+    calc = validatePoints(x, y);
+
+    $('calResult').classList.remove('error');
+
+    $('calResult').textContent =
+      'Ajuste calculado correctamente.\n' +
+      'Intervalo: ' + fmt(x[0]) + ' a ' +
+      fmt(x[2]) + ' °C.\n' +
+      'Error = DHT11 − referencia.\n' +
+      'Pendiente de aplicar y verificar en el ESP32.';
+
+    showCalibration(calc);
+
+    $('downloadCal').disabled = false;
+    $('downloadCalCSV').disabled = false;
+
+  } catch (err) {
+    calc = null;
+
+    $('calResult').classList.add('error');
+    $('calResult').textContent = err.message;
+
+    $('downloadCal').disabled = true;
+    $('downloadCalCSV').disabled = true;
+  }
+};
+
+$('downloadCal').onclick = () => {
+  if (calc) {
+    download(
+      'Calibracion.h',
+      headerFor(calc)
+    );
+  }
+};
+
+$('downloadCalCSV').onclick = () => {
+  if (!calc) return;
+
+  const rows = [
+    [
+      'Punto',
+      'DHT11_C',
+      'Referencia_C',
+      'Error_original_C',
+      'Error_absoluto_C',
+      'Temperatura_corregida_C',
+      'Error_corregido_C'
+    ]
+  ];
+
+  calc.x.forEach((value, i) => {
+    const corrected = interpolate(
+      value, calc.x, calc.y
+    );
+
+    rows.push([
+      i + 1,
+      value,
+      calc.y[i],
+      value - calc.y[i],
+      Math.abs(value - calc.y[i]),
+      corrected,
+      corrected - calc.y[i]
+    ]);
+  });
+
+  download(
+    'calibracion_temperatura.csv',
+    csv(rows),
+    'text/csv'
+  );
+};
+
+/* INICIALIZACIÓN */
+if (isGas) {
+  mode = 'live';
+  $('connect').textContent = 'Leer mi sensor ↗';
+}
+
+render();
+
+if (isGas) refresh();
+
+setInterval(() => {
+  if (mode === 'live') refresh();
+}, 60000);
+
+setInterval(freshness, 10000);
+
+</script>
+</body>
+</html>
+</section>
+
+
+  
