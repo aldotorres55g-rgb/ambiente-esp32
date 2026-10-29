@@ -13,7 +13,32 @@
 <section id="ajuste" role="tabpanel" aria-labelledby="tab-ajuste" hidden><div class="heading"><div><p class="eyebrow">COMPARA · AJUSTA · VERIFICA</p><h1>Tres puntos. Una corrección.</h1><p>Introduce promedios reales del DHT11 y de tu termómetro de referencia.</p></div><button onclick="window.print()">Imprimir este ajuste</button></div><div class="notice">Usa un termómetro ambiental o una sonda apta para medir aire. Un termómetro clínico o infrarrojo puede no servir para esta comparación. La humedad requiere un higrómetro de referencia.</div><div class="twocol"><article class="card"><h2>Tus mediciones</h2><p>Ordena los puntos de menor a mayor temperatura. En cada nivel, toma 5 pares de lecturas una vez estabilizados ambos instrumentos y calcula sus promedios.</p><form id="calForm"><div class="formgrid"><span></span><span class="small">DHT11 sin ajustar · °C</span><span class="small">Termómetro · °C</span>
 <span class="small">01</span><input id="x1" aria-label="Punto 1 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y1" aria-label="Punto 1 promedio termómetro" type="number" step="any" required placeholder="Sin medir">
 <span class="small">02</span><input id="x2" aria-label="Punto 2 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y2" aria-label="Punto 2 promedio termómetro" type="number" step="any" required placeholder="Sin medir">
-<span class="small">03</span><input id="x3" aria-label="Punto 3 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y3" aria-label="Punto 3 promedio termómetro" type="number" step="any" required placeholder="Sin medir"></div><label class="checkline"><input type="checkbox" id="realPoints" required>Confirmo que son mediciones reales y estables tomadas con una referencia adecuada.</label><button class="primary" type="submit">Calcular mi ajuste</button></form><div id="calcResult" class="calc-result" role="status">Esperando los tres pares de promedios.</div><div class="actions"><button id="downloadHeader" disabled>Descargar Calibracion.h ↓</button><button id="downloadCal" disabled>Guardar tabla CSV ↓</button></div><p class="small" style="margin-bottom:0">Se guarda un borrador en este navegador, si permite almacenamiento local. Descargar el archivo no cambia el ESP32: hay que cargar el programa desde Arduino IDE.</p></article><aside class="card"><p class="eyebrow">MÉTODO</p><h2>Interpolación por tramos</h2><p>Una recta une los puntos 1 y 2; otra une los puntos 2 y 3. Cada lectura se corrige con la recta que le corresponde.</p><div class="formula">Tsalida = yi + (Tcruda − xi)<br>× (yi+1 − yi) / (xi+1 − xi)</div><div class="row"><span>x</span><span>Promedio DHT11</span></div><div class="row"><span>y</span><span>Promedio termómetro</span></div><p class="small">Fuera del intervalo medido, el programa muestra la lectura original y marca «fuera de intervalo». No extrapola.</p><div class="notice" style="margin:20px 0 0">Coincidir en los tres puntos usados para calcular el ajuste no prueba la exactitud. Después repite mediciones independientes para comprobar el error.</div></aside></div><article class="card table-card"><h2>Errores en los puntos utilizados</h2><p class="small">Error = indicación − referencia, expresado en °C. No uses un porcentaje basado en °C para valorar la exactitud.</p><div class="table-wrap"><table><thead><tr><th>Punto</th><th>DHT11 °C</th><th>Referencia °C</th><th>Error antes °C</th><th>Salida calculada °C</th></tr></thead><tbody id="calRows"><tr><td colspan="5">Pendiente de mediciones.</td></tr></tbody></table></div></article></section>
+<span class="small">03</span><input id="x3" aria-label="Punto 3 promedio DHT11" type="number" step="any" required placeholder="Sin medir"><input id="y3" aria-label="Punto 3 promedio termómetro" type="number" step="any" required placeholder="Sin medir"></div><div style="margin:18px 0 10px">
+  <h3 style="margin:0 0 7px">Humedad relativa · tres puntos</h3>
+  <p class="small">Introduce la humedad del DHT11 y de un higrómetro de referencia en cada punto. No se puede calcular la humedad de referencia con un termómetro convencional.</p>
+  <div class="formgrid">
+    <span></span><span class="small">DHT11 · % HR</span><span class="small">Higrómetro · % HR</span>
+    <span class="small">01</span><input id="hx1" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 1"><input id="hy1" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 1">
+    <span class="small">02</span><input id="hx2" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 2"><input id="hy2" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 2">
+    <span class="small">03</span><input id="hx3" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad DHT11 punto 3"><input id="hy3" type="number" min="0" max="100" step="any" placeholder="Sin medir" aria-label="Humedad de referencia punto 3">
+  </div>
+</div>
+<label class="checkline"><input type="checkbox" id="realPoints" required>Confirmo que son mediciones reales y estables tomadas con una referencia adecuada.</label><button class="primary" type="submit">Calcular mi ajuste</button></form><div id="calcResult" class="calc-result" role="status">Esperando los tres pares de promedios.</div><div class="actions"><button id="downloadHeader" disabled>Descargar Calibracion.h ↓</button><button id="downloadCal" disabled>Guardar tabla CSV ↓</button></div><p class="small" style="margin-bottom:0">Se guarda un borrador en este navegador, si permite almacenamiento local. Descargar el archivo no cambia el ESP32: hay que cargar el programa desde Arduino IDE.</p></article><aside class="card"><p class="eyebrow">MÉTODO</p><h2>Interpolación por tramos</h2><p>Una recta une los puntos 1 y 2; otra une los puntos 2 y 3. Cada lectura se corrige con la recta que le corresponde.</p><div class="formula">Tsalida = yi + (Tcruda − xi)<br>× (yi+1 − yi) / (xi+1 − xi)</div><div class="row"><span>x</span><span>Promedio DHT11</span></div><div class="row"><span>y</span><span>Promedio termómetro</span></div><p class="small">Fuera del intervalo medido, el programa muestra la lectura original y marca «fuera de intervalo». No extrapola.</p><div class="notice" style="margin:20px 0 0">Coincidir en los tres puntos usados para calcular el ajuste no prueba la exactitud. Después repite mediciones independientes para comprobar el error.</div></aside></div><article class="card" id="calGraphs" style="margin-top:20px">
+<h2>Análisis gráfico de calibración</h2>
+<p class="small">Las curvas se generan con las mediciones introducidas, sin datos inventados. Temperatura y humedad usan escalas independientes.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:20px">
+<div><h3>Gráfica 1 · Temperatura y humedad</h3><div id="calCompare" style="min-height:260px"><p class="small">Introduce las mediciones y pulsa «Calcular mi ajuste».</p></div></div>
+<div><h3>Gráfica 2 · Errores antes del ajuste</h3><div id="calErrors" style="min-height:260px"><p class="small">Pendiente de cálculo.</p></div></div>
+</div>
+<p class="small">Error de temperatura = T(DHT11) − T(referencia), en °C. Error de humedad = HR(DHT11) − HR(referencia), en puntos porcentuales (pp). La corrección de humedad se estima por interpolación entre lecturas de humedad DHT11 ordenadas; fuera del intervalo se conserva la lectura original.</p>
+</article>
+<article class="card table-card">
+<h2>Tabla de mediciones, errores y correcciones</h2>
+<p class="small">Los valores corresponden a las dos gráficas. Las columnas de humedad solo se completan con lecturas reales de un higrómetro de referencia.</p>
+<div class="table-wrap"><table>
+<thead><tr><th>Punto</th><th>DHT11 °C</th><th>Ref. °C</th><th>Error °C</th><th>Temp. corregida °C</th><th>DHT11 % HR</th><th>Ref. % HR</th><th>Error HR (pp)</th><th>HR corregida %</th></tr></thead>
+<tbody id="calRows"><tr><td colspan="9">Pendiente de mediciones.</td></tr></tbody>
+</table></div></article></section>
 <section id="guia" role="tabpanel" aria-labelledby="tab-guia" hidden><div class="heading"><div><p class="eyebrow">TU PROYECTO, PASO A PASO</p><h1>Listo para llevarlo al prototipo.</h1><p>El profesor pidió el ajuste de tres puntos, un reporte y un video del procedimiento.</p></div></div><div class="twocol"><article class="card"><h2>Conectar Google Sheets</h2><p>Necesitas los archivos Code.gs e Index.html del paquete entregado en el chat.</p><div class="steps"><div class="step"><h3>Abre tu hoja y guarda el código anterior</h3><p>Google Sheets → Extensiones → Apps Script. Copia tu código actual como respaldo. Conserva el archivo de datos.</p></div><div class="step"><h3>Instala los dos archivos</h3><p>Reemplaza Code.gs. Añade un archivo HTML llamado <code>Index</code> y pega Index.html. El código ya apunta a tu hoja y a la pestaña «Hoja 1».</p></div><div class="step"><h3>Actualiza la implementación existente</h3><p>Implementar → Administrar implementaciones → Editar → Nueva versión → Implementar. Ejecutar como tú; acceso para Cualquier persona, necesario para el ESP32 sin sesión de Google. Actualizar la misma implementación conserva su URL /exec.</p></div><div class="step"><h3>Abre el monitor y verifica una lectura</h3><p>Al abrir /exec verás esta web. En este panel externo, pulsa «Conectar mi sensor» solo después de actualizar Apps Script. Enciende el ESP32 y confirma que aparece una nueva fila y una fecha reciente.</p></div></div><a href="https://docs.google.com/spreadsheets/d/1FXXlDqLMH80_znSQDQpEqqifyxo2KD2claU-K2cXu40/edit" target="_blank" rel="noopener">Abrir mi hoja de Google Sheets ↗</a><details><summary>Qué se guarda y quién puede verlo</summary><p>A: fecha; B: temperatura de salida; C: humedad; D: temperatura original; E: identificador del ajuste; F: estado. Se conservan los registros anteriores. La web pública de Apps Script y su lectura externa muestran solo esas mediciones ambientales a quien conozca la URL. La contraseña Wi-Fi se escribe únicamente en Secrets.h.</p></details></article><aside class="card"><h2>Realizar los tres puntos</h2><p>Esta es una comparación y ajuste escolar. La calidad del resultado depende de la referencia y del montaje.</p><div class="steps"><div class="step"><h3>Prepara la comparación</h3><p>Coloca el DHT11 y la zona sensible del termómetro próximos, a la misma altura y separados del ESP32, las manos y fuentes directas de calor.</p></div><div class="step"><h3>Crea tres ambientes suaves</h3><p>Un nivel fresco, uno ambiente y otro templado, separados varios grados y dentro del rango de ambos instrumentos. Puedes usar un recipiente seco con botellas cerradas de agua fresca o templada, sin contacto con los sensores.</p></div><div class="step"><h3>Espera estabilidad y registra</h3><p>La temperatura de interés es la del aire, no la del agua. Evita condensación. No sumerjas el DHT11, no uses hielo directo, vapor, llama ni aire caliente directo. Registra 5 pares estables por punto, separados unos 10 segundos.</p></div><div class="step"><h3>Aplica y verifica</h3><p>Descarga Calibracion.h, reemplázalo en la carpeta ESP32_Monitor y carga el programa. Haz nuevas comparaciones independientes; conserva tanto los aciertos como los errores.</p></div></div></aside></div><article class="card table-card"><h2>La entrega</h2><div class="split" style="margin:18px 0 0"><div><h3>Reporte</h3><p>Objetivo; conexiones; termómetro y su rango/resolución; procedimiento; cinco pares por punto y promedios; ecuación de ajuste; verificación independiente; capturas del monitor; limitaciones y conclusiones basadas en resultados.</p></div><div><h3>Video</h3><p>Muestra ambos instrumentos, los tres niveles reales, la estabilidad, la tabla, la carga del ajuste y una nueva lectura en la web. Evita mostrar contraseñas. No se requiere la presentación de 10 minutos del plan anterior.</p></div></div><details><summary>Si la gráfica no cambia</summary><p>La página consulta cada 60 s; solo aparecen nuevas mediciones cuando el ESP32 envía una fila. Revisa Wi-Fi, el Monitor Serie a 115200, la URL /exec y que hayas publicado una nueva versión. El programa debe mostrar «Registro confirmado por Apps Script».</p></details><details><summary>Qué solucionan las redirecciones</summary><p>Google entrega el contenido mediante otra URL temporal. <code>HTTPC_STRICT_FOLLOW_REDIRECTS</code> permite seguirla. Una tabla vacía no es por sí misma un bloqueo de seguridad. <a href="https://developers.google.com/apps-script/guides/content" target="_blank" rel="noopener">Documentación de Google ↗</a></p></details></article></section>
 </main><footer><span>AMBIENTE / CONTROL Y AUTOMATIZACIÓN</span><span>ESP32 → APPS SCRIPT → GOOGLE SHEETS → WEB</span></footer></div>
 <dialog id="connection"><h2>Conecta tus mediciones</h2><p>Primero instala Code.gs e Index.html y publica una nueva versión en Apps Script. No se enviarán datos de prueba a tu hoja.</p><label for="endpoint">URL de implementación de Google Apps Script</label><input id="endpoint" type="url" spellcheck="false"><label class="checkline"><input type="checkbox" id="installed">Ya instalé los archivos y actualicé la implementación.</label><p class="small">La lectura externa muestra datos ambientales mediante un endpoint público de solo lectura. Para desactivarla, cambia PERMITIR_PANEL_EXTERNO en Code.gs.</p><div id="connectError" class="status-text error" role="alert"></div><div class="actions"><button id="cancelConnect">Cancelar</button><button class="primary" id="confirmConnect">Conectar</button></div></dialog>
@@ -58,9 +83,87 @@ $('csv').onclick=()=>download(mode==='demo'?'DEMO_lecturas_simuladas.csv':'lectu
 function validatePoints(x,y){if([...x,...y].some(v=>!Number.isFinite(v)))throw new Error('Completa los seis valores con números válidos.');if(!(x[0]<x[1]&&x[1]<x[2]))throw new Error('Los tres promedios DHT11 deben ser distintos y estar ordenados de menor a mayor.');if(!(y[0]<y[1]&&y[1]<y[2]))throw new Error('La referencia también debe aumentar. Revisa el orden y la estabilidad.');if([...x,...y].some(v=>v<0||v>50))throw new Error('Para este protocolo escolar, usa puntos entre 0 y 50 °C y verifica el rango de tu versión del DHT11 y del termómetro.');if(Math.min(x[1]-x[0],x[2]-x[1],y[1]-y[0],y[2]-y[1])<2)throw new Error('Separa los niveles al menos 2 °C; diferencias pequeñas dificultan un ajuste útil.');return {x,y,id:'cal_'+Date.now()};}
 function interpolate(x,xs,ys){if(x<xs[0]||x>xs[2])return x;const j=x<=xs[1]?0:1;return ys[j]+(x-xs[j])*(ys[j+1]-ys[j])/(xs[j+1]-xs[j]);}
 function headerFor(c){return '#pragma once\n// Ajuste escolar por tres puntos. No extrapola fuera del intervalo.\nconst bool CALIBRACION_ACTIVA = true;\nconst float PUNTOS_DHT[3] = {'+c.x.map(v=>Number(v).toFixed(6)+'f').join(', ')+'};\nconst float PUNTOS_REF[3] = {'+c.y.map(v=>Number(v).toFixed(6)+'f').join(', ')+'};\nconst char* CALIBRACION_ID = "'+c.id+'";\n';}
-const pointIds=['x1','y1','x2','y2','x3','y3'];
-function invalidate(){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').classList.remove('error');$('calcResult').textContent='Datos modificados. Calcula de nuevo para generar el archivo.';$('calRows').replaceChildren();cells($('calRows'),['Pendiente de cálculo.']);save('ambiente_cal_draft',pointIds.map(id=>$(id).value));}
+
+function calReadHumidity(){
+  const raw=['hx1','hy1','hx2','hy2','hx3','hy3'].map(id=>$(id).value.trim());
+  if(raw.every(v=>v===''))return null;
+  if(raw.some(v=>v===''))throw new Error('Completa los seis valores de humedad o deja todos vacíos si aún no tienes higrómetro.');
+  const values=raw.map(Number);
+  if(values.some(v=>!Number.isFinite(v)||v<0||v>100))throw new Error('La humedad debe estar entre 0 y 100 % HR.');
+  const hx=[values[0],values[2],values[4]],hy=[values[1],values[3],values[5]];
+  if(!(hx[0]<hx[1]&&hx[1]<hx[2]))throw new Error('Para corregir humedad, los valores DHT11 de humedad deben aumentar de un punto al siguiente. Reordena los pares de humedad o usa mediciones adecuadas.');
+  return {hx,hy};
+}
+function calPlotSeries(target,series,units){
+  const box=$(target);box.replaceChildren();
+  if(!series.length){box.textContent='Sin mediciones disponibles.';return;}
+  const W=570,H=270,left=52,right=54,top=22,bottom=54,plotW=W-left-right,plotH=H-top-bottom;
+  const ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');
+  svg.setAttribute('aria-label',series.map(s=>s.label).join(', '));
+  svg.style.cssText='width:100%;height:auto;max-height:340px;display:block';
+  const el=(tag,attrs,txt)=>{const node=document.createElementNS(ns,tag);Object.entries(attrs||{}).forEach(([k,v])=>node.setAttribute(k,v));if(txt!==undefined)node.textContent=txt;svg.append(node);return node;};
+  const x=i=>left+plotW*(i/2);
+  const axes={};
+  for(const unit of units){
+    const vals=series.filter(s=>s.unit===unit).flatMap(s=>s.values);
+    let min=Math.min(...vals),max=Math.max(...vals);
+    const pad=Math.max((max-min)*0.18,unit==='°C'?1:2);
+    min-=pad;max+=pad;if(unit==='% HR') {min=Math.max(0,min);max=Math.min(100,max);}
+    if(max<=min)max=min+1;
+    axes[unit]={min,max,y:v=>top+plotH-(v-min)/(max-min)*plotH};
+  }
+  const first=units[0],second=units[1];
+  for(let i=0;i<=4;i++){
+    const yy=top+plotH*i/4;
+    el('line',{x1:left,y1:yy,x2:W-right,y2:yy,stroke:'#546462','stroke-opacity':'.4','stroke-dasharray':'3 5'});
+    el('text',{x:left-7,y:yy+4,fill:'#c1cfcb','font-size':12,'text-anchor':'end'},(axes[first].max-(axes[first].max-axes[first].min)*i/4).toFixed(1));
+    if(second)el('text',{x:W-right+8,y:yy+4,fill:'#c1cfcb','font-size':12},(axes[second].max-(axes[second].max-axes[second].min)*i/4).toFixed(1));
+  }
+  [0,1,2].forEach(i=>el('text',{x:x(i),y:H-bottom+21,fill:'#c1cfcb','font-size':12,'text-anchor':'middle'},`Punto ${i+1}`));
+  series.forEach(s=>{
+    const y=axes[s.unit].y;
+    el('polyline',{points:s.values.map((v,i)=>`${x(i)},${y(v)}`).join(' '),fill:'none',stroke:s.color,'stroke-width':3,'stroke-linecap':'round','stroke-linejoin':'round'});
+    s.values.forEach((v,i)=>{
+      el('circle',{cx:x(i),cy:y(v),r:4,fill:s.color});
+      const offset=s.label.includes('referencia')?17:-10;
+      el('text',{x:x(i),y:y(v)+offset,fill:s.color,'font-size':11,'text-anchor':'middle'},v.toFixed(1));
+    });
+  });
+  box.append(svg);
+  const legend=document.createElement('div');legend.style.cssText='display:flex;flex-wrap:wrap;gap:8px 15px;font-size:12px;margin-top:5px';
+  series.forEach(s=>{const label=document.createElement('span');label.style.color=s.color;label.textContent='● '+s.label;legend.append(label);});box.append(legend);
+}
+function calRenderResults(c,h){
+  const T=c.x.map((v,i)=>v-c.y[i]);
+  const series=[
+    {label:'DHT11 temperatura (°C)',unit:'°C',values:c.x,color:'#c8ef92'},
+    {label:'Temperatura referencia (°C)',unit:'°C',values:c.y,color:'#f6bc79'}
+  ];
+  if(h){
+    series.push({label:'DHT11 humedad (% HR)',unit:'% HR',values:h.hx,color:'#70d9d1'});
+    series.push({label:'Humedad referencia (% HR)',unit:'% HR',values:h.hy,color:'#b6a4ff'});
+  }
+  calPlotSeries('calCompare',series,h?['°C','% HR']:['°C']);
+  const errors=[{label:'Error temperatura (°C)',unit:'°C',values:T,color:'#f6bc79'}];
+  if(h)errors.push({label:'Error humedad (pp)',unit:'pp',values:h.hx.map((v,i)=>v-h.hy[i]),color:'#70d9d1'});
+  calPlotSeries('calErrors',errors,h?['°C','pp']:['°C']);
+  $('calRows').replaceChildren();
+  c.x.forEach((v,i)=>{
+    const hum=h?h.hx[i]:null,ref=h?h.hy[i]:null;
+    cells($('calRows'),[i+1,fmt(v,2),fmt(c.y[i],2),fmt(T[i],2),fmt(interpolate(v,c.x,c.y),2),h?fmt(hum,2):'—',h?fmt(ref,2):'—',h?fmt(hum-ref,2):'—',h?fmt(interpolate(hum,h.hx,h.hy),2):'—']);
+  });
+}
+
+const pointIds=['x1','y1','x2','y2','x3','y3','hx1','hy1','hx2','hy2','hx3','hy3'];
+function invalidate(){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').classList.remove('error');$('calcResult').textContent='Datos modificados. Calcula de nuevo para generar el archivo.';$('calRows').replaceChildren();cells($('calRows'),['Pendiente de cálculo.']);$('calRows').firstElementChild.firstElementChild.colSpan=9;$('calCompare').textContent='Modificaste las mediciones. Pulsa «Calcular mi ajuste».';$('calErrors').textContent='Pendiente de cálculo.';save('ambiente_cal_draft',pointIds.map(id=>$(id).value));}
 pointIds.forEach(id=>$(id).oninput=invalidate);$('realPoints').onchange=invalidate;
+$('calForm').onsubmit=e=>{e.preventDefault();try{const x=[1,2,3].map(i=>$('x'+i).value.trim()===''?NaN:Number($('x'+i).value)),y=[1,2,3].map(i=>$('y'+i).value.trim()===''?NaN:Number($('y'+i).value));if(!$('realPoints').checked)throw new Error('Confirma que son mediciones reales.');calc=validatePoints(x,y);const humidity=calReadHumidity();calc.humidity=humidity;$('calcResult').classList.remove('error');$('calcResult').textContent='Ajuste calculado en el intervalo DHT11 '+fmt(x[0],2)+' a '+fmt(x[2],2)+' °C.\nTramo 1: pendiente '+fmt((y[1]-y[0])/(x[1]-x[0]),4)+' · Tramo 2: pendiente '+fmt((y[2]-y[1])/(x[2]-x[1]),4)+'\nPendiente de cargar al ESP32 y verificar con nuevas mediciones.';$('downloadHeader').disabled=false;$('downloadCal').disabled=false;$('calRows').replaceChildren();calRenderResults(calc,humidity);}catch(err){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').textContent=err.message;$('calcResult').classList.add('error');}};
+$('downloadHeader').onclick=()=>{if(calc)download('Calibracion.h',headerFor(calc));};$('downloadCal').onclick=()=>{if(calc)download('ajuste_tres_puntos.csv',csv([['punto','DHT_temperatura_C','referencia_temperatura_C','error_temperatura_C','temperatura_corregida_C','DHT_humedad_pct','referencia_humedad_pct','error_humedad_pp','humedad_corregida_pct','id_ajuste'],...calc.x.map((x,i)=>[i+1,x,calc.y[i],x-calc.y[i],interpolate(x,calc.x,calc.y),calc.humidity?calc.humidity.hx[i]:'',calc.humidity?calc.humidity.hy[i]:'',calc.humidity?calc.humidity.hx[i]-calc.humidity.hy[i]:'',calc.humidity?interpolate(calc.humidity.hx[i],calc.humidity.hx,calc.humidity.hy):'',calc.id])]),'text/csv;charset=utf-8');};
+const draft=read('ambiente_cal_draft');if(Array.isArray(draft)&&draft.length===pointIds.length)pointIds.forEach((id,i)=>$(id).value=typeof draft[i]==='string'?draft[i]:'');
+if(isGas){mode='live';$('connect').textContent='Leer mi sensor ↗';}render();if(isGas)refresh();setInterval(()=>{if(mode==='live')refresh();},60000);setInterval(freshness,10000);
+</script></body></html>
 $('calForm').onsubmit=e=>{e.preventDefault();try{const x=[1,2,3].map(i=>$('x'+i).value.trim()===''?NaN:Number($('x'+i).value)),y=[1,2,3].map(i=>$('y'+i).value.trim()===''?NaN:Number($('y'+i).value));if(!$('realPoints').checked)throw new Error('Confirma que son mediciones reales.');calc=validatePoints(x,y);$('calcResult').classList.remove('error');$('calcResult').textContent='Ajuste calculado en el intervalo DHT11 '+fmt(x[0],2)+' a '+fmt(x[2],2)+' °C.\nTramo 1: pendiente '+fmt((y[1]-y[0])/(x[1]-x[0]),4)+' · Tramo 2: pendiente '+fmt((y[2]-y[1])/(x[2]-x[1]),4)+'\nPendiente de cargar al ESP32 y verificar con nuevas mediciones.';$('downloadHeader').disabled=false;$('downloadCal').disabled=false;$('calRows').replaceChildren();x.forEach((v,i)=>cells($('calRows'),[i+1,fmt(v,2),fmt(y[i],2),fmt(v-y[i],2),fmt(interpolate(v,x,y),2)]));}catch(err){calc=null;$('downloadHeader').disabled=true;$('downloadCal').disabled=true;$('calcResult').textContent=err.message;$('calcResult').classList.add('error');}};
 $('downloadHeader').onclick=()=>{if(calc)download('Calibracion.h',headerFor(calc));};$('downloadCal').onclick=()=>{if(calc)download('ajuste_tres_puntos.csv',csv([['punto','DHT_promedio_C','referencia_promedio_C','error_antes_C','salida_calculada_C','id_ajuste'],...calc.x.map((x,i)=>[i+1,x,calc.y[i],x-calc.y[i],interpolate(x,calc.x,calc.y),calc.id])]),'text/csv;charset=utf-8');};
 const draft=read('ambiente_cal_draft');if(Array.isArray(draft)&&draft.length===6)pointIds.forEach((id,i)=>$(id).value=typeof draft[i]==='string'?draft[i]:'');
